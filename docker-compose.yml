@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16 # Use the official postgres image from Docker Hub
+    restart: always # Ensures the container restarts if it fails
+    ports:
+      - "5432:5432" # Maps port 5432 on the host to port 5432 in the container
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persists the database data
+
+volumes:
+  postgres_data:
