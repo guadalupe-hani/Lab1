@@ -89,6 +89,79 @@ class UsuarioService(
         return usuario
     }
 
+    fun obtenerPerfil(id: Long): Map<String, Any?> {
+        val u = usuarioRepository.findById(id).orElseThrow {
+            IllegalArgumentException("Usuario no encontrado")
+        }
+        val base = mutableMapOf<String, Any?>(
+            "id" to u.id, "nombre" to u.nombre, "apellido" to u.apellido,
+            "email" to u.email, "rol" to u.rol
+        )
+        when (u.rol) {
+            "PACIENTE" -> pacienteRepository.findByUsuarioId(id)?.let {
+                base["dni"] = it.dni
+                base["telefono"] = it.telefono
+                base["obraSocial"] = it.obraSocial
+                base["plan"] = it.plan
+            }
+            "MEDICO" -> profesionalRepository.findByUsuarioId(id)?.let {
+                base["matricula"] = it.matricula
+                base["especialidadId"] = it.especialidad?.id
+            }
+            "ADMINISTRATIVO" -> administrativoRepository.findByUsuarioId(id)?.let {
+                base["consultorioId"] = it.consultorio?.id
+            }
+        }
+        return base
+    }
+
+    @Transactional
+    fun editar(
+        id: Long,
+        nombre: String?, apellido: String?, email: String?, password: String?,
+        telefono: String?, obraSocial: String?, plan: String?,
+        especialidadId: Long?, consultorioId: Long?
+    ): Usuarios {
+        val u = usuarioRepository.findById(id).orElseThrow {
+            IllegalArgumentException("Usuario no encontrado")
+        }
+        if (!email.isNullOrBlank() && email != u.email) {
+            if (usuarioRepository.existsByEmail(email)) {
+                throw IllegalArgumentException("Ya existe un usuario con ese email")
+            }
+            u.email = email
+        }
+        if (!nombre.isNullOrBlank()) u.nombre = nombre
+        if (!apellido.isNullOrBlank()) u.apellido = apellido
+        if (!password.isNullOrBlank()) u.password = password
+        usuarioRepository.save(u)
+        when (u.rol) {
+            "PACIENTE" -> pacienteRepository.findByUsuarioId(id)?.let { p ->
+                if (telefono != null) p.telefono = telefono
+                if (obraSocial != null) p.obraSocial = obraSocial
+                if (plan != null) p.plan = plan
+                pacienteRepository.save(p)
+            }
+            "MEDICO" -> profesionalRepository.findByUsuarioId(id)?.let { pro ->
+                if (especialidadId != null) {
+                    pro.especialidad = especialidadRepository.findById(especialidadId).orElseThrow {
+                        IllegalArgumentException("Especialidad no encontrada")
+                    }
+                }
+                profesionalRepository.save(pro)
+            }
+            "ADMINISTRATIVO" -> administrativoRepository.findByUsuarioId(id)?.let { a ->
+                if (consultorioId != null) {
+                    a.consultorio = consultorioRepository.findById(consultorioId).orElseThrow {
+                        IllegalArgumentException("Consultorio no encontrado")
+                    }
+                }
+                administrativoRepository.save(a)
+            }
+        }
+        return u
+    }
+
     @Transactional
     fun eliminar(id: Long) {
         val usuario = usuarioRepository.findById(id).orElseThrow {

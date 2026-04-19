@@ -22,6 +22,12 @@ data class RegistroAdministrativoRequest(
 
 data class LoginRequest(val email: String, val password: String)
 
+data class EditarRequest(
+    val nombre: String?, val apellido: String?, val email: String?, val password: String?,
+    val telefono: String?, val obraSocial: String?, val plan: String?,
+    val especialidadId: Long?, val consultorioId: Long?
+)
+
 @RestController
 @RequestMapping("/api/usuarios")
 @CrossOrigin(origins = ["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5500"], allowCredentials = "true")
@@ -97,6 +103,38 @@ class UsuarioController(private val usuarioService: UsuarioService) {
             usuarioService.eliminar(id)
             session.invalidate()
             ResponseEntity.ok(mapOf("mensaje" to "Cuenta eliminada"))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        }
+    }
+
+    @GetMapping("/perfil")
+    fun perfil(session: HttpSession): ResponseEntity<Any> {
+        val id = session.getAttribute("usuarioId") as? Long
+            ?: return ResponseEntity.status(401).body(mapOf("error" to "No hay sesión activa"))
+        return try {
+            ResponseEntity.ok(usuarioService.obtenerPerfil(id))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        }
+    }
+
+    @PutMapping("/editar")
+    fun editar(@RequestBody req: EditarRequest, session: HttpSession): ResponseEntity<Any> {
+        val id = session.getAttribute("usuarioId") as? Long
+            ?: return ResponseEntity.status(401).body(mapOf("error" to "No hay sesión activa"))
+        return try {
+            val u = usuarioService.editar(
+                id, req.nombre, req.apellido, req.email, req.password,
+                req.telefono, req.obraSocial, req.plan,
+                req.especialidadId, req.consultorioId
+            )
+            session.setAttribute("usuarioEmail", u.email)
+            ResponseEntity.ok(mapOf(
+                "mensaje" to "Perfil actualizado",
+                "id" to u.id, "nombre" to u.nombre, "apellido" to u.apellido,
+                "email" to u.email, "rol" to u.rol
+            ))
         } catch (e: IllegalArgumentException) {
             ResponseEntity.badRequest().body(mapOf("error" to e.message))
         }

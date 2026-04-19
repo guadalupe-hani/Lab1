@@ -1,6 +1,10 @@
+import { useState } from 'react'
 import { api } from '../api'
+import EditarPerfil from './EditarPerfil'
 
-export default function Home({ user, onLogout }) {
+export default function Home({ user, onLogout, onUpdate }) {
+  const [editing, setEditing] = useState(false)
+
   const handleLogout = async () => {
     await api.logout()
     onLogout()
@@ -12,6 +16,16 @@ export default function Home({ user, onLogout }) {
     onLogout()
   }
 
+  if (editing) {
+    return (
+      <EditarPerfil
+        user={user}
+        onDone={(updated) => { onUpdate(updated); setEditing(false) }}
+        onCancel={() => setEditing(false)}
+      />
+    )
+  }
+
   return (
     <div className="card">
       <h2>Bienvenido/a a OnTime Health</h2>
@@ -19,6 +33,7 @@ export default function Home({ user, onLogout }) {
       <p><strong>Email:</strong> {user.email}</p>
       <p><strong>Rol:</strong> {user.rol}</p>
       <div className="actions">
+        <button onClick={() => setEditing(true)}>Editar perfil</button>
         <button onClick={handleLogout}>Cerrar sesión</button>
         <button className="danger" onClick={handleDelete}>Eliminar cuenta</button>
       </div>

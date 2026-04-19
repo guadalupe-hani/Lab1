@@ -111,3 +111,443 @@ button.link {
   font-size: 14px;
   text-align: center;
 }
+
+/* === Layout logueado === */
+.app-logged {
+  min-height: 100vh;
+}
+
+.app-content {
+  max-width: 720px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+/* === Navbar === */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0a6ebd;
+  color: #fff;
+  padding: 12px 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.nav-brand {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-link {
+  background: transparent;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.nav-link.active {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.nav-user .link {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* === Card header === */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-header h2 {
+  margin: 0;
+}
+
+/* === Recetas === */
+.recetas-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.receta-item {
+  padding: 14px;
+  border: 1px solid #e0e5eb;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.receta-item:hover {
+  background: #f5f9fd;
+  border-color: #0a6ebd;
+}
+
+.receta-preview {
+  color: #555;
+}
+
+.receta-meta {
+  font-size: 13px;
+  color: #777;
+  margin-top: 4px;
+}
+
+.receta-detalle .contenido {
+  background: #f7f9fc;
+  padding: 14px;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.receta-detalle .firma {
+  text-align: right;
+  color: #555;
+  margin-top: 16px;
+}
+
+textarea {
+  padding: 10px 12px;
+  border: 1px solid #ccd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #0a6ebd;
+}
+
+/* === Agenda / Horarios === */
+.horarios-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.horario-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 1px solid #e0e5eb;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.horario-meta {
+  font-size: 13px;
+  color: #777;
+  margin-top: 2px;
+}
+
+.form-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 12px;
+  background: #f7f9fc;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.form-inline input, .form-inline select {
+  flex: 1;
+  min-width: 120px;
+}
+
+.form-inline button {
+  flex-shrink: 0;
+}
+
+.hint {
+  font-size: 13px;
+  color: #777;
+  margin-top: -4px;
+  margin-bottom: 12px;
+}
+
+select {
+  padding: 10px 12px;
+  border: 1px solid #ccd;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+}
+
+select:focus {
+  outline: none;
+  border-color: #0a6ebd;
+}
+
+.link.danger {
+  color: #c0392b;
+}
+
+/* === Turnos === */
+.turnos-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.turno-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid #e0e5eb;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.turno-item.estado-cancelado {
+  background: #fbeaea;
+  border-color: #e8b3b3;
+  opacity: 0.85;
+}
+
+.turno-main {
+  flex: 1;
+}
+
+.turno-fecha {
+  font-size: 15px;
+}
+
+.turno-info {
+  margin-top: 4px;
+  color: #444;
+}
+
+.turno-consultorio {
+  font-size: 13px;
+  color: #777;
+  margin-top: 2px;
+}
+
+.turno-estado-msg {
+  margin-top: 6px;
+  font-size: 13px;
+  font-style: italic;
+  color: #c0392b;
+}
+
+.turno-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* === Búsqueda médicos === */
+.medicos-lista {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+}
+
+.medico-item {
+  padding: 14px;
+  border: 1px solid #e0e5eb;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.medico-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.medico-meta {
+  font-size: 13px;
+  color: #777;
+  margin-top: 2px;
+}
+
+.medico-horarios {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mini-horario {
+  background: #eef4fb;
+  color: #0a6ebd;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+/* === Disponibilidad === */
+.admin-dni {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: #fff8e1;
+  border-radius: 6px;
+  margin-bottom: 14px;
+}
+
+.admin-dni input {
+  flex: 1;
+}
+
+.disponibilidad {
+  margin-top: 10px;
+}
+
+.dia-block {
+  margin-bottom: 16px;
+}
+
+.dia-block h4 {
+  margin: 0 0 8px;
+  color: #0a6ebd;
+  font-size: 14px;
+  border-bottom: 1px solid #e0e5eb;
+  padding-bottom: 4px;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.slot-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  background: #fff;
+  color: #0a6ebd;
+  border: 1px solid #0a6ebd;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.slot-btn:hover:not(:disabled) {
+  background: #0a6ebd;
+  color: #fff;
+}
+
+.slot-consultorio {
+  font-size: 10px;
+  font-weight: normal;
+  margin-top: 2px;
+  opacity: 0.8;
+}
+
+/* === Medicamentos === */
+.medicamentos-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.medicamento-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 14px;
+  border: 1px solid #e0e5eb;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.medicamento-item.inactivo {
+  opacity: 0.6;
+  background: #f7f7f7;
+}
+
+.medicamento-presentacion {
+  color: #555;
+}
+
+.medicamento-desc {
+  font-size: 13px;
+  color: #777;
+  margin-top: 4px;
+}
+
+.medicamento-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.badge-inactivo {
+  background: #c0392b;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  margin-left: 8px;
+}
+
+/* === Items de receta === */
+.items-receta-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+}
+
+.item-receta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px;
+  background: #f7f9fc;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.item-detalle {
+  font-size: 13px;
+  color: #555;
+  margin-top: 4px;
+}
+
+.agregar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #eef4fb;
+  border-radius: 6px;
+  border: 1px dashed #0a6ebd;
+}

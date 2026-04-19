@@ -37,4 +37,10 @@ class Turnos {
 
     @Column(name = "orden_en_fila")
     var ordenEnFila: Int? = null
+
+    @Column(name = "cancelado_por")
+    var canceladoPor: String? = null
+
+    @Column(name = "motivo_cancelacion", length = 500)
+    var motivoCancelacion: String? = null
 }

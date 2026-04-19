@@ -28,9 +28,12 @@ class Recetas {
     @Column(name = "obra_social")
     var obraSocial: String? = null
 
-    @Column(name = "contenido", nullable = false, length = 2000)
+    @Column(name = "contenido", length = 2000)
     var contenido: String? = null
 
     @Column(name = "firma")
     var firma: String? = null
+
+    @OneToMany(mappedBy = "receta", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
+    var items: MutableList<RecetaItems> = mutableListOf()
 }

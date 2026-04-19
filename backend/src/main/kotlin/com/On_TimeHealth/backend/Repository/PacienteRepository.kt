@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface PacienteRepository : JpaRepository<Pacientes, Long> {
     fun findByUsuarioId(usuarioId: Long): Pacientes?
+    fun findByDni(dni: String): Pacientes?
     fun existsByDni(dni: String): Boolean
     fun deleteByUsuarioId(usuarioId: Long)
 }
