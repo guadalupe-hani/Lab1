@@ -3,8 +3,8 @@ package com.On_TimeHealth.backend.Model
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "Profesionales")
-class Profesionales {
+@Table(name = "Administrativos")
+class Administrativos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
@@ -13,10 +13,7 @@ class Profesionales {
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     var usuario: Usuarios? = null
 
-    @Column(name = "matricula", nullable = false, unique = true)
-    var matricula: String? = null
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "especialidad_id")
-    var especialidad: Especialidades? = null
+    @JoinColumn(name = "consultorio_id")
+    var consultorio: Consultorios? = null
 }

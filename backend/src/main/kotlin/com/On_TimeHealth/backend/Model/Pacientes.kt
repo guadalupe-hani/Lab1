@@ -1,24 +1,27 @@
 package com.On_TimeHealth.backend.Model
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "Pacientes")
 class Pacientes {
     @Id
-    @Column(name = "DNI", nullable=false)
-    var dni: Int? = null;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
 
-    @Column(name= "Nombre", nullable=false)
-    var nombre: String? = null;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
+    var usuario: Usuarios? = null
 
-    @Column(name= "Apellido", nullable=false)
-    var apellido: String? = null;
+    @Column(name = "dni", nullable = false, unique = true)
+    var dni: String? = null
 
-    @Column(name= "Telefono", nullable=false)
-    var telefono: Int? = null;
+    @Column(name = "telefono")
+    var telefono: String? = null
+
+    @Column(name = "obra_social")
+    var obraSocial: String? = null
+
+    @Column(name = "plan")
+    var plan: String? = null
 }

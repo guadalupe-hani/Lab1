@@ -1,26 +1,40 @@
 package com.On_TimeHealth.backend.Model
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
-import java.util.*
+import jakarta.persistence.*
+import java.time.LocalDate
+import java.time.LocalTime
 
 @Entity
-@Table(name="Turnos")
+@Table(name = "Turnos")
 class Turnos {
-
     @Id
-    @Column(name="ID_turno", nullable = false)
-    var idTurno: Int? = null
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
 
-    @Column(name="Fecha", nullable = false)
-    var fecha: Date? = null
+    @Column(name = "fecha", nullable = false)
+    var fecha: LocalDate? = null
 
-    @Column(name="profesional", nullable = false)
-    var profesional: Long? = null
+    @Column(name = "hora", nullable = false)
+    var hora: LocalTime? = null
 
-    @Column(name="Paciente", nullable = false)
-    var paciente: Int? = null
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "paciente_id", nullable = false)
+    var paciente: Pacientes? = null
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profesional_id", nullable = false)
+    var profesional: Profesionales? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "consultorio_id", nullable = false)
+    var consultorio: Consultorios? = null
+
+    @Column(name = "estado", nullable = false)
+    var estado: String? = "PROGRAMADO"
+
+    @Column(name = "estado_paciente")
+    var estadoPaciente: String? = null
+
+    @Column(name = "orden_en_fila")
+    var ordenEnFila: Int? = null
 }

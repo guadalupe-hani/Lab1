@@ -1,0 +1,36 @@
+package com.On_TimeHealth.backend.Model
+
+import jakarta.persistence.*
+import java.time.LocalDate
+
+@Entity
+@Table(name = "Recetas")
+class Recetas {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "turno_id")
+    var turno: Turnos? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "paciente_id", nullable = false)
+    var paciente: Pacientes? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profesional_id", nullable = false)
+    var profesional: Profesionales? = null
+
+    @Column(name = "fecha", nullable = false)
+    var fecha: LocalDate? = null
+
+    @Column(name = "obra_social")
+    var obraSocial: String? = null
+
+    @Column(name = "contenido", nullable = false, length = 2000)
+    var contenido: String? = null
+
+    @Column(name = "firma")
+    var firma: String? = null
+}
