@@ -7,6 +7,7 @@ import Recetas from './components/Recetas'
 import Agenda from './components/Agenda'
 import Turnos from './components/Turnos'
 import Medicamentos from './components/Medicamentos'
+import EditarPerfil from './components/EditarPerfil'
 import './App.css'
 
 export default function App() {
@@ -19,7 +20,7 @@ export default function App() {
       <Navbar user={user} page={page} onNavigate={setPage} onLogout={() => setUser(null)} />
       <div className="app-content">
         {page === 'inicio' && (
-          <Home user={user} onLogout={() => setUser(null)} onUpdate={setUser} />
+          <Home user={user} onLogout={() => setUser(null)} onUpdate={setUser} onNavigate={setPage} />
         )}
         {page === 'recetas' && (
           <Recetas user={user} />
@@ -33,16 +34,33 @@ export default function App() {
         {page === 'medicamentos' && (
           <Medicamentos />
         )}
+        {page === 'perfil' && (
+          <EditarPerfil
+            user={user}
+            onDone={(updated) => { setUser(updated); setPage('inicio') }}
+            onCancel={() => setPage('inicio')}
+          />
+        )}
       </div>
     </div>
   )
 
   return (
     <div className="app">
-      <h1>OnTime Health</h1>
+      <div className="app-header">
+        <div className="brand">
+          <div className="brand-logo">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" />
+            </svg>
+          </div>
+          On-Time Health
+        </div>
+      </div>
       {view === 'login'
         ? <Login onSuccess={setUser} onSwitch={() => setView('registro')} />
         : <Registro onSwitch={() => setView('login')} />}
+      <p className="tagline">Gestiona tus turnos médicos de forma inteligente</p>
     </div>
   )
 }

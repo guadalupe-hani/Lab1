@@ -1,126 +1,97 @@
+:root {
+  --bg: #dbe9f5;
+  --bg-soft: #eaf2fa;
+  --card: #ffffff;
+  --info: #eaf2fc;
+  --info-strong: #d9e7fb;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #dbeafe;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: #cbd5e1;
+  --border-soft: #e2e8f0;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 16px rgba(30, 64, 175, 0.08);
+  --shadow-sm: 0 2px 6px rgba(30, 64, 175, 0.06);
+}
+
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  background: #f5f7fa;
-  color: #1a1a1a;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
 }
 
-.app {
-  max-width: 480px;
-  margin: 40px auto;
-  padding: 20px;
-}
-
-.app h1 {
-  text-align: center;
-  color: #0a6ebd;
-  margin-bottom: 24px;
-}
-
-.card {
-  background: #fff;
-  padding: 28px;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-}
-
-.card h2 {
-  margin-top: 0;
-  color: #333;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
+/* === Brand / logo === */
+.brand {
+  display: inline-flex;
+  align-items: center;
   gap: 10px;
-  margin-top: 16px;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--primary);
+  text-decoration: none;
 }
 
-input {
-  padding: 10px 12px;
-  border: 1px solid #ccd;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-input:focus {
-  outline: none;
-  border-color: #0a6ebd;
-}
-
-button {
-  padding: 10px 16px;
-  background: #0a6ebd;
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  background: var(--primary);
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  font-weight: 500;
+  flex-shrink: 0;
 }
 
-button:hover {
-  background: #085a9c;
-}
-
-button.danger {
-  background: #c0392b;
-}
-
-button.danger:hover {
-  background: #a0291b;
-}
-
-button.link {
-  background: none;
-  color: #0a6ebd;
-  padding: 0;
-  text-decoration: underline;
-  font-weight: normal;
-}
-
-.roles {
-  display: flex;
-  gap: 16px;
-  margin: 12px 0;
-  font-size: 14px;
-}
-
-.actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.error {
-  color: #c0392b;
-  margin-top: 12px;
-  font-size: 14px;
-}
-
-.ok {
-  color: #27ae60;
-  margin-top: 12px;
-  font-size: 14px;
-}
-
-.switch {
-  margin-top: 16px;
-  font-size: 14px;
-  text-align: center;
-}
+.brand-logo svg { width: 22px; height: 22px; }
 
 /* === Layout logueado === */
 .app-logged {
   min-height: 100vh;
+  background: var(--bg);
 }
 
 .app-content {
-  max-width: 720px;
+  width: 100%;
   margin: 30px auto;
-  padding: 0 20px;
+  padding: 0 32px;
+}
+
+/* === Layout no logueado === */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px 24px;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.app-header .brand { font-size: 26px; }
+
+.app .tagline {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 28px;
+  font-size: 14px;
+}
+
+.app .card {
+  width: 100%;
+  max-width: 420px;
 }
 
 /* === Navbar === */
@@ -128,51 +99,100 @@ button.link {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #0a6ebd;
-  color: #fff;
-  padding: 12px 24px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  color: var(--text);
+  padding: 14px 32px;
+  box-shadow: var(--shadow-sm);
 }
 
 .nav-brand {
-  font-weight: 600;
-  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--primary);
 }
 
 .nav-links {
   display: flex;
-  gap: 8px;
+  gap: 4px;
 }
 
 .nav-link {
   background: transparent;
-  color: #fff;
-  padding: 6px 14px;
-  border-radius: 4px;
+  color: var(--muted);
+  padding: 8px 14px;
+  border-radius: 6px;
   font-weight: 500;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
 }
 
 .nav-link:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .nav-link.active {
-  background: rgba(255, 255, 255, 0.25);
+  color: var(--primary);
+  font-weight: 600;
 }
 
 .nav-user {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   font-size: 14px;
+  color: var(--muted);
 }
 
 .nav-user .link {
-  color: #fff;
-  text-decoration: underline;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
 }
 
-/* === Card header === */
+.nav-user .link:hover { color: var(--primary); }
+
+.nav-user .user-link {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.nav-user .user-link:hover {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.nav-user .user-link.active {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* === Cards === */
+.card {
+  background: var(--card);
+  padding: 28px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--text);
+  text-align: center;
+}
+
 .card-header {
   display: flex;
   align-items: center;
@@ -180,45 +200,223 @@ button.link {
   margin-bottom: 16px;
 }
 
-.card-header h2 {
-  margin: 0;
+.card-header h2 { margin: 0; text-align: left; }
+
+/* === Forms === */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
 }
 
-/* === Recetas === */
-.recetas-lista {
+input, textarea, select {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: inherit;
+  background: #f8fafc;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #fff;
+}
+
+textarea { resize: vertical; }
+
+/* === Buttons === */
+button {
+  padding: 12px 18px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+button:hover { background: var(--primary-hover); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+button.danger { background: var(--danger); }
+button.danger:hover { background: var(--danger-hover); }
+
+button.secondary {
+  background: #e2e8f0;
+  color: var(--text);
+}
+button.secondary:hover { background: #cbd5e1; }
+
+button.link {
+  background: none;
+  color: var(--primary);
+  padding: 0;
+  text-decoration: underline;
+  font-weight: 500;
+}
+button.link:hover { background: none; color: var(--primary-hover); }
+.link.danger { color: var(--danger); }
+
+/* === Roles, actions, mensajes === */
+.roles {
+  display: flex;
+  gap: 16px;
+  margin: 12px 0;
+  font-size: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.error {
+  color: var(--danger);
+  margin-top: 12px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.ok {
+  color: #16a34a;
+  margin-top: 12px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.switch {
+  margin-top: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: -4px;
+  margin-bottom: 12px;
+}
+
+/* === Home / action cards grid === */
+.welcome-card {
+  text-align: center;
+  padding: 36px 28px 28px;
+}
+
+.welcome-card h2 { margin-bottom: 6px; }
+
+.welcome-subtitle {
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.action-card {
+  background: var(--info);
+  border-radius: var(--radius);
+  padding: 22px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  border-color: var(--primary-soft);
+}
+
+.action-card .icon-wrap {
+  width: 48px;
+  height: 48px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.action-card .icon-wrap svg { width: 26px; height: 26px; }
+
+.action-card h3 {
+  margin: 4px 0 0;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.action-card p {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.action-card .action-btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  margin-top: auto;
+}
+
+/* === Recetas / listas compartidas === */
+.recetas-lista, .horarios-lista, .turnos-lista, .medicos-lista,
+.medicamentos-lista, .items-receta-lista {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.receta-item {
-  padding: 14px;
-  border: 1px solid #e0e5eb;
-  border-radius: 8px;
+.receta-item, .medico-item, .turno-item, .medicamento-item {
+  padding: 16px;
+  background: var(--info);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
   margin-bottom: 10px;
-  cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
 
+.receta-item { cursor: pointer; }
 .receta-item:hover {
-  background: #f5f9fd;
-  border-color: #0a6ebd;
+  background: var(--info-strong);
+  border-color: var(--primary-soft);
 }
 
-.receta-preview {
-  color: #555;
-}
+.receta-preview { color: var(--muted); }
 
-.receta-meta {
+.receta-meta, .horario-meta, .turno-consultorio,
+.medico-meta, .medicamento-desc {
   font-size: 13px;
-  color: #777;
+  color: var(--muted);
   margin-top: 4px;
 }
 
 .receta-detalle .contenido {
-  background: #f7f9fc;
+  background: var(--bg-soft);
   padding: 14px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   white-space: pre-wrap;
   font-family: inherit;
   font-size: 14px;
@@ -227,45 +425,19 @@ button.link {
 
 .receta-detalle .firma {
   text-align: right;
-  color: #555;
+  color: var(--muted);
   margin-top: 16px;
 }
 
-textarea {
-  padding: 10px 12px;
-  border: 1px solid #ccd;
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: inherit;
-  resize: vertical;
-}
-
-textarea:focus {
-  outline: none;
-  border-color: #0a6ebd;
-}
-
 /* === Agenda / Horarios === */
-.horarios-lista {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
 .horario-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
-  border: 1px solid #e0e5eb;
-  border-radius: 8px;
+  padding: 14px;
+  background: var(--info);
+  border-radius: var(--radius-sm);
   margin-bottom: 8px;
-}
-
-.horario-meta {
-  font-size: 13px;
-  color: #777;
-  margin-top: 2px;
 }
 
 .form-inline {
@@ -273,124 +445,46 @@ textarea:focus {
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
-  padding: 12px;
-  background: #f7f9fc;
-  border-radius: 8px;
+  padding: 14px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
   margin-top: 12px;
 }
 
-.form-inline input, .form-inline select {
-  flex: 1;
-  min-width: 120px;
-}
-
-.form-inline button {
-  flex-shrink: 0;
-}
-
-.hint {
-  font-size: 13px;
-  color: #777;
-  margin-top: -4px;
-  margin-bottom: 12px;
-}
-
-select {
-  padding: 10px 12px;
-  border: 1px solid #ccd;
-  border-radius: 6px;
-  font-size: 14px;
-  background: #fff;
-}
-
-select:focus {
-  outline: none;
-  border-color: #0a6ebd;
-}
-
-.link.danger {
-  color: #c0392b;
-}
+.form-inline input, .form-inline select { flex: 1; min-width: 120px; }
+.form-inline button { flex-shrink: 0; }
 
 /* === Turnos === */
-.turnos-lista {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
 .turno-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px;
-  border: 1px solid #e0e5eb;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  gap: 12px;
 }
 
 .turno-item.estado-cancelado {
-  background: #fbeaea;
-  border-color: #e8b3b3;
+  background: #fef2f2;
+  border-color: #fecaca;
   opacity: 0.85;
 }
 
-.turno-main {
-  flex: 1;
-}
-
-.turno-fecha {
-  font-size: 15px;
-}
-
-.turno-info {
-  margin-top: 4px;
-  color: #444;
-}
-
-.turno-consultorio {
-  font-size: 13px;
-  color: #777;
-  margin-top: 2px;
-}
-
+.turno-main { flex: 1; }
+.turno-fecha { font-size: 15px; font-weight: 600; }
+.turno-info { margin-top: 4px; color: var(--text); }
 .turno-estado-msg {
   margin-top: 6px;
   font-size: 13px;
   font-style: italic;
-  color: #c0392b;
+  color: var(--danger);
 }
-
-.turno-actions {
-  display: flex;
-  gap: 8px;
-}
+.turno-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
 /* === Búsqueda médicos === */
-.medicos-lista {
-  list-style: none;
-  padding: 0;
-  margin: 16px 0 0;
-}
-
-.medico-item {
-  padding: 14px;
-  border: 1px solid #e0e5eb;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
 .medico-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-}
-
-.medico-meta {
-  font-size: 13px;
-  color: #777;
-  margin-top: 2px;
 }
 
 .medico-horarios {
@@ -401,11 +495,12 @@ select:focus {
 }
 
 .mini-horario {
-  background: #eef4fb;
-  color: #0a6ebd;
+  background: var(--primary-soft);
+  color: var(--primary);
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 12px;
+  font-weight: 500;
 }
 
 /* === Disponibilidad === */
@@ -413,30 +508,24 @@ select:focus {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px;
-  background: #fff8e1;
-  border-radius: 6px;
+  padding: 12px;
+  background: #fef9c3;
+  border-radius: var(--radius-sm);
   margin-bottom: 14px;
 }
 
-.admin-dni input {
-  flex: 1;
-}
+.admin-dni input { flex: 1; }
 
-.disponibilidad {
-  margin-top: 10px;
-}
+.disponibilidad { margin-top: 10px; }
 
-.dia-block {
-  margin-bottom: 16px;
-}
+.dia-block { margin-bottom: 16px; }
 
 .dia-block h4 {
   margin: 0 0 8px;
-  color: #0a6ebd;
+  color: var(--primary);
   font-size: 14px;
-  border-bottom: 1px solid #e0e5eb;
-  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-soft);
+  padding-bottom: 6px;
 }
 
 .slots-grid {
@@ -449,16 +538,16 @@ select:focus {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8px 4px;
+  padding: 10px 4px;
   background: #fff;
-  color: #0a6ebd;
-  border: 1px solid #0a6ebd;
+  color: var(--primary);
+  border: 1px solid var(--primary);
   font-size: 14px;
   font-weight: 600;
 }
 
 .slot-btn:hover:not(:disabled) {
-  background: #0a6ebd;
+  background: var(--primary);
   color: #fff;
 }
 
@@ -470,37 +559,19 @@ select:focus {
 }
 
 /* === Medicamentos === */
-.medicamentos-lista {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
 .medicamento-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 14px;
-  border: 1px solid #e0e5eb;
-  border-radius: 8px;
-  margin-bottom: 8px;
   gap: 12px;
 }
 
 .medicamento-item.inactivo {
   opacity: 0.6;
-  background: #f7f7f7;
+  background: #f1f5f9;
 }
 
-.medicamento-presentacion {
-  color: #555;
-}
-
-.medicamento-desc {
-  font-size: 13px;
-  color: #777;
-  margin-top: 4px;
-}
+.medicamento-presentacion { color: var(--muted); }
 
 .medicamento-actions {
   display: flex;
@@ -510,7 +581,7 @@ select:focus {
 }
 
 .badge-inactivo {
-  background: #c0392b;
+  background: var(--danger);
   color: #fff;
   padding: 2px 8px;
   border-radius: 10px;
@@ -519,26 +590,20 @@ select:focus {
 }
 
 /* === Items de receta === */
-.items-receta-lista {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 16px;
-}
-
 .item-receta {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   padding: 12px;
-  background: #f7f9fc;
-  border-radius: 6px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
   margin-bottom: 8px;
   gap: 12px;
 }
 
 .item-detalle {
   font-size: 13px;
-  color: #555;
+  color: var(--muted);
   margin-top: 4px;
 }
 
@@ -546,8 +611,18 @@ select:focus {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px;
-  background: #eef4fb;
-  border-radius: 6px;
-  border: 1px dashed #0a6ebd;
+  padding: 14px;
+  background: var(--primary-soft);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--primary);
+}
+
+/* === Responsive navbar === */
+@media (max-width: 640px) {
+  .navbar {
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 20px;
+  }
+  .nav-links { flex-wrap: wrap; justify-content: center; }
 }

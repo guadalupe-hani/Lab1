@@ -1,5 +1,15 @@
 import { api } from '../api'
 
+function BrandLogo() {
+  return (
+    <div className="brand-logo">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" />
+      </svg>
+    </div>
+  )
+}
+
 export default function Navbar({ user, page, onNavigate, onLogout }) {
   const handleLogout = async () => {
     await api.logout()
@@ -10,7 +20,10 @@ export default function Navbar({ user, page, onNavigate, onLogout }) {
 
   return (
     <nav className="navbar">
-      <div className="nav-brand">OnTime Health</div>
+      <div className="nav-brand">
+        <BrandLogo />
+        On-Time Health
+      </div>
       <div className="nav-links">
         <button className={linkClass('inicio')} onClick={() => onNavigate('inicio')}>Inicio</button>
         <button className={linkClass('turnos')} onClick={() => onNavigate('turnos')}>Turnos</button>
@@ -23,7 +36,12 @@ export default function Navbar({ user, page, onNavigate, onLogout }) {
         )}
       </div>
       <div className="nav-user">
-        <span>{user.nombre} ({user.rol})</span>
+        <button
+          className={'user-link' + (page === 'perfil' ? ' active' : '')}
+          onClick={() => onNavigate('perfil')}
+        >
+          {user.nombre}
+        </button>
         <button className="link" onClick={handleLogout}>Cerrar sesión</button>
       </div>
     </nav>
