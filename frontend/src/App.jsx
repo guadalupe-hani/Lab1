@@ -39,6 +39,7 @@ export default function App() {
             user={user}
             onDone={(updated) => { setUser(updated); setPage('inicio') }}
             onCancel={() => setPage('inicio')}
+            onLogout={() => setUser(null)}
           />
         )}
       </div>

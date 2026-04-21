@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api'
 
-export default function EditarPerfil({ user, onDone, onCancel }) {
+export default function EditarPerfil({ user, onDone, onCancel, onLogout }) {
   const [form, setForm] = useState(null)
   const [error, setError] = useState('')
   const [ok, setOk] = useState('')
@@ -26,6 +26,16 @@ export default function EditarPerfil({ user, onDone, onCancel }) {
   if (!form) return <div className="card"><p>Cargando...</p></div>
 
   const update = (k) => (e) => setForm({ ...form, [k]: e.target.value })
+
+  const handleDelete = async () => {
+    if (!confirm('¿Seguro que querés eliminar tu cuenta? Esta acción es irreversible.')) return
+    try {
+      await api.eliminar()
+      onLogout && onLogout()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -84,6 +94,11 @@ export default function EditarPerfil({ user, onDone, onCancel }) {
       </form>
       {error && <p className="error">{error}</p>}
       {ok && <p className="ok">{ok}</p>}
+
+      <hr style={{ margin: '24px 0 16px', border: 0, borderTop: '1px solid var(--border-soft)' }} />
+      <div style={{ textAlign: 'center' }}>
+        <button className="link danger" onClick={handleDelete}>Eliminar cuenta</button>
+      </div>
     </div>
   )
 }

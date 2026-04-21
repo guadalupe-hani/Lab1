@@ -1,4 +1,3 @@
-import { api } from '../api'
 
 const ICONS = {
   calendar: (
@@ -44,13 +43,7 @@ function ActionCard({ icon, title, description, button, onClick }) {
   )
 }
 
-export default function Home({ user, onLogout, onNavigate }) {
-  const handleDelete = async () => {
-    if (!confirm('¿Seguro que querés eliminar tu cuenta? Esta acción es irreversible.')) return
-    await api.eliminar()
-    onLogout()
-  }
-
+export default function Home({ user, onNavigate }) {
   const welcome = {
     PACIENTE: '¡Bienvenido/a, paciente!',
     MEDICO: '¡Bienvenido/a, doctor/a!',
@@ -104,9 +97,6 @@ export default function Home({ user, onLogout, onNavigate }) {
         ))}
       </div>
 
-      <div className="actions" style={{ justifyContent: 'center', marginTop: 32 }}>
-        <button className="link danger" onClick={handleDelete}>Eliminar cuenta</button>
-      </div>
     </>
   )
 }
