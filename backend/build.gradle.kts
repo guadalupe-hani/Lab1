@@ -7,7 +7,7 @@ plugins {
 	kotlin("plugin.jpa") version "2.2.21"
 }
 
-group = "com.On-TimeHealth"
+group = "com.ontimehealth"
 version = "0.0.1-SNAPSHOT"
 
 java {
