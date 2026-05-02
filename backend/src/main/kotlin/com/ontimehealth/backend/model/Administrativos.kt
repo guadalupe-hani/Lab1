@@ -1,4 +1,4 @@
-package com.On_TimeHealth.backend.Model
+package com.ontimehealth.backend.model
 
 import jakarta.persistence.*
 
