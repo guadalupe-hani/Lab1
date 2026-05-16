@@ -3,6 +3,7 @@ import { api } from '../api'
 import BuscarMedico from './BuscarMedico'
 import ElegirSlot from './ElegirSlot'
 
+
 export default function Turnos({ user }) {
   const [lista, setLista] = useState([])
   const [loading, setLoading] = useState(true)
