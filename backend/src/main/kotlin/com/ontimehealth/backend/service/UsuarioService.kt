@@ -15,7 +15,12 @@ class UsuarioService(
     private val profesionalRepository: ProfesionalRepository,
     private val administrativoRepository: AdministrativoRepository,
     private val especialidadRepository: EspecialidadRepository,
-    private val consultorioRepository: ConsultorioRepository
+    private val consultorioRepository: ConsultorioRepository,
+
+    private val turnoRepository: TurnoRepository,
+    private val recetaRepository: RecetaRepository,
+    private val horarioRepository: HorarioTrabajoRepository,
+    private val diaLibreRepository: DiaLibreRepository
 ) {
 
     @Transactional
@@ -170,11 +175,51 @@ class UsuarioService(
         val usuario = usuarioRepository.findById(id).orElseThrow {
             IllegalArgumentException("Usuario no encontrado")
         }
+
         when (usuario.rol) {
-            "PACIENTE" -> pacienteRepository.deleteByUsuarioId(id)
-            "MEDICO" -> profesionalRepository.deleteByUsuarioId(id)
-            "ADMINISTRATIVO" -> administrativoRepository.deleteByUsuarioId(id)
+            "PACIENTE" -> {
+                val paciente = pacienteRepository.findByUsuarioId(id)
+                if (paciente != null) {
+                    // 1. Borramos sus recetas
+                    val recetas = recetaRepository.findByPacienteIdOrderByFechaDesc(paciente.id!!)
+                    recetaRepository.deleteAll(recetas)
+
+                    // 2. Borramos sus turnos
+                    val turnos = turnoRepository.findByPacienteIdOrderByFechaDescHoraDesc(paciente.id!!)
+                    turnoRepository.deleteAll(turnos)
+
+                    // 3. Borramos el perfil de paciente
+                    pacienteRepository.delete(paciente)
+                }
+            }
+            "MEDICO" -> {
+                val profesional = profesionalRepository.findByUsuarioId(id)
+                if (profesional != null) {
+                    val recetas = recetaRepository.findByProfesionalIdOrderByFechaDesc(profesional.id!!)
+                    recetaRepository.deleteAll(recetas)
+
+                    val turnos = turnoRepository.findByProfesionalIdOrderByFechaDescHoraDesc(profesional.id!!)
+                    turnoRepository.deleteAll(turnos)
+
+                    val horarios = horarioRepository.findByProfesionalId(profesional.id!!)
+                    horarioRepository.deleteAll(horarios)
+
+                    val diasLibres = diaLibreRepository.findByProfesionalIdOrderByFechaAsc(profesional.id!!)
+                    diaLibreRepository.deleteAll(diasLibres)
+
+                    profesionalRepository.delete(profesional)
+                }
+            }
+            "ADMINISTRATIVO" -> {
+                // Los administrativos solo gestionan, no tienen turnos propios
+                val admin = administrativoRepository.findByUsuarioId(id)
+                if (admin != null) {
+                    administrativoRepository.delete(admin)
+                }
+            }
         }
+
+        // Finalmente, borramos el usuario base
         usuarioRepository.deleteById(id)
     }
 
