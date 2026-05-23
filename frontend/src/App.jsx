@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Login from './components/Login'
 import Registro from './components/Registro'
 import Home from './components/Home'
@@ -8,12 +8,53 @@ import Agenda from './components/Agenda'
 import Turnos from './components/Turnos'
 import Medicamentos from './components/Medicamentos'
 import EditarPerfil from './components/EditarPerfil'
+import { api } from './api'
 import './App.css'
 
 export default function App() {
   const [user, setUser] = useState(null)
+  const [cargandoSesion, setCargandoSesion] = useState(true)
   const [view, setView] = useState('login')
   const [page, setPage] = useState('inicio')
+
+    useEffect(() => {
+        api.perfil()
+            .then((datosUsuario) => {
+                setUser(datosUsuario)
+            })
+            .catch(() => {
+                setUser(null)
+            })
+            .finally(() => {
+                setCargandoSesion(false)
+            })
+    }, []);
+
+    useEffect(() => {
+        if (user) {
+            window.history.pushState({ paginaGuardada: page }, '', `/${page}`)
+        }
+    }, [page, user])
+
+    useEffect(() => {
+        const escucharBotonAtras = (evento) => {
+            if (evento.state && evento.state.paginaGuardada) {
+                setPage(evento.state.paginaGuardada)
+            }
+        }
+
+        window.addEventListener('popstate', escucharBotonAtras)
+
+        return () => window.removeEventListener('popstate', escucharBotonAtras)
+    }, [])
+
+  if(cargandoSesion){
+      return (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#2563eb', fontWeight: '600' }}>
+              Cargando On-Time Health...
+          </div>
+      )
+  }
 
   if (user) return (
     <div className="app-logged">
@@ -22,18 +63,10 @@ export default function App() {
         {page === 'inicio' && (
           <Home user={user} onLogout={() => setUser(null)} onUpdate={setUser} onNavigate={setPage} />
         )}
-        {page === 'recetas' && (
-          <Recetas user={user} />
-        )}
-        {page === 'agenda' && (
-          <Agenda user={user} />
-        )}
-        {page === 'turnos' && (
-          <Turnos user={user} />
-        )}
-        {page === 'medicamentos' && (
-          <Medicamentos />
-        )}
+        {page === 'recetas' && (<Recetas user={user} />)}
+        {page === 'agenda' && (<Agenda user={user} />)}
+        {page === 'turnos' && (<Turnos user={user} />)}
+        {page === 'medicamentos' && (<Medicamentos />)}
         {page === 'perfil' && (
           <EditarPerfil
             user={user}
