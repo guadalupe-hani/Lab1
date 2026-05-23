@@ -48,7 +48,15 @@ function validateMedico(form) {
   return errors
 }
 
-export default function Registro({ onSuccess, onSwitch }) {
+const Field = ({ id, label, error: err, children }) => (
+    <div className="field">
+      <label htmlFor={id}>{label}</label>
+      {children}
+      {err && <span className="field-error">{err}</span>}
+    </div>
+)
+
+export default function Registro({ onSwitch }) {
   const [rol, setRol] = useState('PACIENTE')
   const [form, setForm] = useState({
     nombre: '', apellido: '', email: '', password: '',
@@ -96,13 +104,7 @@ export default function Registro({ onSuccess, onSwitch }) {
     }
   }
 
-  const Field = ({ id, label, error: err, children }) => (
-      <div className="field">
-        <label htmlFor={id}>{label}</label>
-        {children}
-        {err && <span className="field-error">{err}</span>}
-      </div>
-  )
+
 
   return (
       <div className="card">
