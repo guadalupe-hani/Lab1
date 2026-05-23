@@ -41,6 +41,14 @@ function ModalConfirmacion({ mensaje, onConfirmar, onCancelar }) {
     )
 }
 
+const Field = ({ id, label, error: err, children }) => (
+    <div className="field">
+        <label htmlFor={id}>{label}</label>
+        {children}
+        {err && <span className="field-error">{err}</span>}
+    </div>
+)
+
 export default function EditarPerfil({ user, onDone, onCancel, onLogout }) {
     const [form, setForm] = useState(null)
     const [error, setError] = useState('')
@@ -118,13 +126,7 @@ export default function EditarPerfil({ user, onDone, onCancel, onLogout }) {
         }
     }
 
-    const Field = ({ id, label, error: err, children }) => (
-        <div className="field">
-            <label htmlFor={id}>{label}</label>
-            {children}
-            {err && <span className="field-error">{err}</span>}
-        </div>
-    )
+
 
     return (
         <>
