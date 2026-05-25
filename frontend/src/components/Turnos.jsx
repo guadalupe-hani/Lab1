@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../api'
 import BuscarMedico from './BuscarMedico'
 import ElegirSlot from './ElegirSlot'
+import ConfirmModal from './ConfirmModal'
 
 
 export default function Turnos({ user }) {
@@ -10,27 +11,44 @@ export default function Turnos({ user }) {
   const [error, setError] = useState('')
   const [vista, setVista] = useState('lista') // 'lista' | 'buscar' | 'slots'
   const [profesionalSel, setProfesionalSel] = useState(null) // { id, nombre }
+  const [turnoACancelar, setTurnoACancelar] = useState(null)
 
   const cargar = () => {
-    setLoading(true)
     api.turnosMios()
-      .then((data) => { setLista(data); setError('') })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false))
+        .then((data) => { setLista(data); setError('') })
+        .catch((err) => setError(err.message))
+        .finally(() => setLoading(false))
   }
 
-  useEffect(() => { cargar() }, [])
+  useEffect(() => {
+    cargar()
+  }, [])
 
-  const handleCancelar = async (id) => {
+  const handleClickCancelar = (id) => {
+    // si es medico o admin, le seguimos pidiendo el motivo por prompt primero
     const motivo = user.rol === 'MEDICO' || user.rol === 'ADMINISTRATIVO'
-      ? prompt('Motivo de la cancelación (opcional):')
-      : null
+        ? prompt('Motivo de la cancelación (opcional):')
+        : null
+
+    // si canceló el prompt presionando el botón "Cancelar" del navegador, salimos
     if (motivo === null && (user.rol === 'MEDICO' || user.rol === 'ADMINISTRATIVO')) return
-    if (!confirm('¿Confirmás la cancelación del turno?')) return
+
+    setTurnoACancelar({ id, motivo: motivo || '' })
+  }
+
+  const confirmarCancelacion = async () => {
+    if (!turnoACancelar) return
+
+    const { id, motivo } = turnoACancelar
+    setTurnoACancelar(null)
+    setLoading(true)
     try {
-      await api.cancelarTurno(id, motivo || '')
+      await api.cancelarTurno(id, motivo)
       cargar()
-    } catch (e) { alert(e.message) }
+    } catch (e) {
+      alert(e.message)
+      setLoading(false)
+    }
   }
 
   const handleReagendar = (turno) => {
@@ -105,7 +123,7 @@ export default function Turnos({ user }) {
               </div>
               <div className="turno-actions">
                 {t.estado === 'PROGRAMADO' && (
-                  <button className="link danger" onClick={() => handleCancelar(t.id)}>Cancelar</button>
+                  <button className="link danger" onClick={() => handleClickCancelar(t.id)}>Cancelar</button>
                 )}
                 {t.estado === 'CANCELADO' && user.rol === 'PACIENTE' && canceladoPorOtro && (
                   <button onClick={() => handleReagendar(t)}>Reagendar</button>
@@ -115,6 +133,16 @@ export default function Turnos({ user }) {
           )
         })}
       </ul>
+      <ConfirmModal
+          open={turnoACancelar !== null}
+          title="Cancelar turno"
+          message="¿Seguro que querés cancelar este turno? Esta acción no se puede deshacer."
+          confirmText="Sí, cancelar"
+          cancelText="No, mantener"
+          danger={true}
+          onConfirm={confirmarCancelacion}
+          onClose={() => setTurnoACancelar(null)}
+      />
     </div>
   )
 }
