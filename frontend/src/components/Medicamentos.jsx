@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api'
+import ConfirmModal from './ConfirmModal'
 
 export default function Medicamentos() {
   const [lista, setLista] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [editando, setEditando] = useState(null) // null | 'nuevo' | medicamento object
+  const [medicamentoABorrar, setMedicamentoABorrar] = useState(null)
 
   const cargar = () => {
-    setLoading(true)
     api.medicamentos()
       .then((data) => { setLista(data); setError('') })
       .catch((err) => setError(err.message))
@@ -17,15 +18,27 @@ export default function Medicamentos() {
 
   useEffect(() => { cargar() }, [])
 
-  const handleEliminar = async (id) => {
-    if (!confirm('¿Dar de baja este medicamento? No aparecerá en las recetas nuevas pero las existentes seguirán mostrándolo.')) return
+  const handleClickEliminar = (id) => {
+    setMedicamentoABorrar(id)
+  }
+
+  const confirmarEliminacion = async () => {
+    if (!medicamentoABorrar) return
+    const id = medicamentoABorrar
+    setMedicamentoABorrar(null)
+
+    setLoading(true)
     try {
       await api.eliminarMedicamento(id)
       cargar()
-    } catch (e) { alert(e.message) }
+    } catch (e) {
+      setError(e.message)
+      setLoading(false)
+    }
   }
 
   const handleReactivar = async (m) => {
+    setLoading(true)
     try {
       await api.editarMedicamento(m.id, { activo: true })
       cargar()
@@ -61,12 +74,21 @@ export default function Medicamentos() {
             <div className="medicamento-actions">
               <button className="link" onClick={() => setEditando(m)}>Editar</button>
               {m.activo
-                ? <button className="link danger" onClick={() => handleEliminar(m.id)}>Dar de baja</button>
+                ? <button className="link danger" onClick={() => handleClickEliminar(m.id)}>Dar de baja</button>
                 : <button className="link" onClick={() => handleReactivar(m)}>Reactivar</button>}
             </div>
           </li>
         ))}
       </ul>
+      <ConfirmModal
+          open={medicamentoABorrar !== null}
+          title="Dar de baja medicamento"
+          message="¿Dar de baja este medicamento? No aparecerá en las recetas nuevas pero las existentes seguirán mostrándolo."
+          confirmText="Sí, dar de baja"
+          danger={true} // Va en rojo porque es una baja
+          onConfirm={confirmarEliminacion}
+          onClose={() => setMedicamentoABorrar(null)}
+      />
     </div>
   )
 }

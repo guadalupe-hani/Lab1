@@ -3,7 +3,7 @@ import { api } from '../api'
 import BuscarMedico from './BuscarMedico'
 import ElegirSlot from './ElegirSlot'
 import ConfirmModal from './ConfirmModal'
-
+import PromptModal from './PromptModal'
 
 export default function Turnos({ user }) {
   const [lista, setLista] = useState([])
@@ -12,6 +12,7 @@ export default function Turnos({ user }) {
   const [vista, setVista] = useState('lista') // 'lista' | 'buscar' | 'slots'
   const [profesionalSel, setProfesionalSel] = useState(null) // { id, nombre }
   const [turnoACancelar, setTurnoACancelar] = useState(null)
+  const [idTurnoParaMotivo, setIdTurnoParaMotivo] = useState(null)
 
   const cargar = () => {
     api.turnosMios()
@@ -25,15 +26,20 @@ export default function Turnos({ user }) {
   }, [])
 
   const handleClickCancelar = (id) => {
-    // si es medico o admin, le seguimos pidiendo el motivo por prompt primero
-    const motivo = user.rol === 'MEDICO' || user.rol === 'ADMINISTRATIVO'
-        ? prompt('Motivo de la cancelación (opcional):')
-        : null
+    // Si es médico o admin, primero mostramos el modal del motivo
+    if (user.rol === 'MEDICO' || user.rol === 'ADMINISTRATIVO') {
+      setIdTurnoParaMotivo(id)
+    } else {
+      // Si es paciente, va directo al modal de confirmación final
+      setTurnoACancelar({ id, motivo: '' })
+    }
+  }
 
-    // si canceló el prompt presionando el botón "Cancelar" del navegador, salimos
-    if (motivo === null && (user.rol === 'MEDICO' || user.rol === 'ADMINISTRATIVO')) return
+  const alCompletarMotivo = (motivoEscrito) => {
+    const id = idTurnoParaMotivo
+    setIdTurnoParaMotivo(null)
 
-    setTurnoACancelar({ id, motivo: motivo || '' })
+    setTurnoACancelar({ id, motivo: motivoEscrito || '' })
   }
 
   const confirmarCancelacion = async () => {
@@ -133,6 +139,16 @@ export default function Turnos({ user }) {
           )
         })}
       </ul>
+      {idTurnoParaMotivo !== null && (
+          <PromptModal
+              open={true} // Siempre le pasamos true porque el control lo tiene la línea de arriba
+              title="Motivo de cancelación"
+              message="Por favor, indicá el motivo por el cual se cancela el turno."
+              confirmText="Siguiente"
+              onConfirm={alCompletarMotivo}
+              onClose={() => setIdTurnoParaMotivo(null)}
+          />
+      )}
       <ConfirmModal
           open={turnoACancelar !== null}
           title="Cancelar turno"

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api'
+import ConfirmModal from './ConfirmModal'
 
 const DIAS = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO']
 
@@ -115,6 +116,7 @@ function HorariosSection({ user, profesionalId }) {
   const [consultorios, setConsultorios] = useState([])
   const [error, setError] = useState('')
   const [mostrandoForm, setMostrandoForm] = useState(false)
+  const [horarioAEliminar, setHorarioAEliminar] = useState(null)
 
   const cargar = () => {
     const promise = user.rol === 'MEDICO'
@@ -130,12 +132,21 @@ function HorariosSection({ user, profesionalId }) {
     }
   }, [user.rol, profesionalId])
 
-  const handleEliminar = async (id) => {
-    if (!confirm('¿Eliminar este horario?')) return
+  const handleClickEliminar = (id) => {
+    setHorarioAEliminar(id)
+  }
+
+  const confirmarEliminacion = async () => {
+    if (!horarioAEliminar) return
+    const id = horarioAEliminar
+    setHorarioAEliminar(null)
+
     try {
       await api.eliminarHorario(id)
       cargar()
-    } catch (e) { setError(e.message) }
+    } catch (e) {
+      setError(e.message)
+    }
   }
 
   return (
@@ -155,7 +166,7 @@ function HorariosSection({ user, profesionalId }) {
               <strong>{h.diaSemana}</strong> — {h.horaInicio?.slice(0, 5)} a {h.horaFin?.slice(0, 5)}
               <div className="horario-meta">{h.consultorioNombre}</div>
             </div>
-            <button className="link danger" onClick={() => handleEliminar(h.id)}>Eliminar</button>
+            <button className="link danger" onClick={() => handleClickEliminar(h.id)}>Eliminar</button>
           </li>
         ))}
       </ul>
@@ -167,6 +178,15 @@ function HorariosSection({ user, profesionalId }) {
           onDone={() => { cargar(); setMostrandoForm(false) }}
         />
       )}
+      <ConfirmModal
+          open={horarioAEliminar !== null}
+          title="Eliminar horario"
+          message="¿Seguro que querés eliminar este bloque de horario de trabajo?"
+          confirmText="Sí, eliminar"
+          danger={true}
+          onConfirm={confirmarEliminacion}
+          onClose={() => setHorarioAEliminar(null)}
+      />
     </div>
   )
 }
@@ -220,6 +240,7 @@ function DiasLibresSection({ user, profesionalId }) {
   const [lista, setLista] = useState([])
   const [error, setError] = useState('')
   const [mostrandoForm, setMostrandoForm] = useState(false)
+  const [diaAEliminar, setDiaAEliminar] = useState(null)
 
   const cargar = () => {
     const promise = user.rol === 'MEDICO'
@@ -230,12 +251,21 @@ function DiasLibresSection({ user, profesionalId }) {
 
   useEffect(() => { cargar() }, [user.rol, profesionalId])
 
-  const handleEliminar = async (id) => {
-    if (!confirm('¿Eliminar este día libre?')) return
+  const handleClickEliminar = (id) => {
+    setDiaAEliminar(id)
+  }
+
+  const confirmarEliminacion = async () => {
+    if (!diaAEliminar) return
+    const id = diaAEliminar
+    setDiaAEliminar(null)
+
     try {
       await api.eliminarDiaLibre(id)
       cargar()
-    } catch (e) { setError(e.message) }
+    } catch (e) {
+      setError(e.message)
+    }
   }
 
   return (
@@ -255,7 +285,7 @@ function DiasLibresSection({ user, profesionalId }) {
               <strong>{d.fecha}</strong>
               {d.motivo && <div className="horario-meta">{d.motivo}</div>}
             </div>
-            <button className="link danger" onClick={() => handleEliminar(d.id)}>Eliminar</button>
+            <button className="link danger" onClick={() => handleClickEliminar(d.id)}>Eliminar</button>
           </li>
         ))}
       </ul>
@@ -266,6 +296,15 @@ function DiasLibresSection({ user, profesionalId }) {
           onDone={() => { cargar(); setMostrandoForm(false) }}
         />
       )}
+      <ConfirmModal
+          open={diaAEliminar !== null}
+          title="Eliminar dia libre"
+          message="¿Seguro que querés eliminar este dia libre?"
+          confirmText="Sí, eliminar"
+          danger={true}
+          onConfirm={confirmarEliminacion}
+          onClose={() => setDiaAEliminar(null)}
+      />
     </div>
   )
 }
