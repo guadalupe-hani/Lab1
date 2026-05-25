@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api'
+import ConfirmModal from './ConfirmModal'
 
 export default function RecetaDetalle({ id, user, onBack }) {
   const [receta, setReceta] = useState(null)
   const [error, setError] = useState('')
+  const [mostrarModal, setMostrarModal] = useState(false)
 
   useEffect(() => {
     api.recetaDetalle(id)
@@ -11,16 +13,19 @@ export default function RecetaDetalle({ id, user, onBack }) {
       .catch((err) => setError(err.message))
   }, [id])
 
-  const handleEliminar = async () => {
-    if (!confirm('¿Seguro que querés eliminar esta receta? Esta acción es irreversible.')) return
-    try {
-      await api.eliminarReceta(id)
-      onBack()
-    } catch (err) {
-      setError(err.message)
+    const handleClickEliminar = () => {
+        setMostrarModal(true)
     }
-  }
 
+    const confirmarEliminacion = async () => {
+        setMostrarModal(false)
+        try {
+            await api.eliminarReceta(id)
+            onBack()
+        } catch (err) {
+            setError(err.message)
+        }
+    }
   if (error) return (
     <div className="card">
       <p className="error">{error}</p>
@@ -71,9 +76,18 @@ export default function RecetaDetalle({ id, user, onBack }) {
       <p className="firma"><em>{receta.firma}</em></p>
       {user.rol === 'MEDICO' && (
         <div className="actions">
-          <button className="danger" onClick={handleEliminar}>Eliminar receta</button>
+          <button className="danger" onClick={handleClickEliminar}>Eliminar receta</button>
         </div>
       )}
+        <ConfirmModal
+            open={mostrarModal}
+            title="Eliminar receta"
+            message="¿Seguro que querés eliminar esta receta? Esta acción es irreversible."
+            confirmText="Sí, eliminar"
+            danger={true}
+            onConfirm={confirmarEliminacion}
+            onClose={() => setMostrarModal(false)}
+        />
     </div>
   )
 }

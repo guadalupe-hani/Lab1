@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api'
+import ConfirmModal from './ConfirmModal'
 
 export default function ElegirSlot({ user, profesional, onDone, onCancel }) {
   const [slots, setSlots] = useState([])
@@ -7,6 +8,8 @@ export default function ElegirSlot({ user, profesional, onDone, onCancel }) {
   const [error, setError] = useState('')
   const [dniPaciente, setDniPaciente] = useState('')
   const [agendando, setAgendando] = useState(false)
+  const [slotSeleccionado, setSlotSeleccionado] = useState(null)
+  const [mostrarExito, setMostrarExito] = useState(false)
 
   useEffect(() => {
     api.disponibilidad(profesional.id)
@@ -15,13 +18,21 @@ export default function ElegirSlot({ user, profesional, onDone, onCancel }) {
       .finally(() => setLoading(false))
   }, [profesional.id])
 
-  const agendar = async (slot) => {
+  const handleSeleccionarSlot = (slot) => {
     if (user.rol === 'ADMINISTRATIVO' && !dniPaciente.trim()) {
       alert('Primero ingresá el DNI del paciente')
       return
     }
-    if (!confirm(`¿Confirmás el turno el ${slot.fecha} a las ${slot.hora.slice(0, 5)}?`)) return
+    setSlotSeleccionado(slot)
+  }
+
+  const confirmarTurno = async () => {
+    if (!slotSeleccionado) return
+
     setAgendando(true)
+    const slot = slotSeleccionado
+    setSlotSeleccionado(null)
+
     try {
       if (user.rol === 'PACIENTE') {
         await api.agendarTurnoPaciente({
@@ -37,8 +48,9 @@ export default function ElegirSlot({ user, profesional, onDone, onCancel }) {
           hora: slot.hora
         })
       }
-      alert('Turno agendado')
-      onDone()
+      //alert('Turno agendado exitosamente')
+      //onDone()
+      setMostrarExito(true)
     } catch (err) {
       alert(err.message)
     } finally {
@@ -87,7 +99,7 @@ export default function ElegirSlot({ user, profesional, onDone, onCancel }) {
                   key={i}
                   className="slot-btn"
                   disabled={agendando}
-                  onClick={() => agendar(s)}
+                  onClick={() => handleSeleccionarSlot(s)}
                   title={s.consultorioNombre}
                 >
                   {s.hora.slice(0, 5)}
@@ -98,6 +110,31 @@ export default function ElegirSlot({ user, profesional, onDone, onCancel }) {
           </div>
         ))}
       </div>
+      <ConfirmModal
+          open={slotSeleccionado !== null}
+          title="Confirmar turno"
+          message={`¿Confirmás el turno el ${slotSeleccionado?.fecha} a las ${slotSeleccionado?.hora?.slice(0, 5)}?`}
+          confirmText="Confirmar"
+          cancelText="Cancelar"
+          danger={false} // no es accion de peligro como borrar
+          onConfirm={confirmarTurno}
+          onClose={() => setSlotSeleccionado(null)}
+      />
+      <ConfirmModal
+          open={mostrarExito}
+          title="¡Turno agendado!"
+          message="El turno fue agendado exitosamente."
+          confirmText="Aceptar"
+          hideCancel={true}
+          onConfirm={() => {
+            setMostrarExito(false)
+            onDone()
+          }}
+          onClose={() => {
+            setMostrarExito(false)
+            onDone()
+          }}
+      />
     </div>
   )
 }
