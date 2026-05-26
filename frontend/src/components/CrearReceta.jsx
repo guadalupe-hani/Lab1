@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { api } from '../api'
 
 export default function CrearReceta({ onDone, onCancel }) {
+  const [busqueda, setBusqueda] = useState('')
+  const [resultados, setResultados] = useState([])
+  const [pacienteSel, setPacienteSel] = useState(null)
   const [dniPaciente, setDniPaciente] = useState('')
   const [medicamentos, setMedicamentos] = useState([])
   const [items, setItems] = useState([]) // [{medicamentoId, dosis, duracion, indicaciones}]
@@ -18,6 +21,14 @@ export default function CrearReceta({ onDone, onCancel }) {
   useEffect(() => {
     api.medicamentosActivos().then(setMedicamentos).catch(() => {})
   }, [])
+
+  useEffect(() => {
+    if (busqueda.trim().length > 1) {
+      api.buscarPacientes(busqueda)
+          .then(setResultados)
+          .catch(() => setResultados([]))
+    }
+  }, [busqueda])
 
   const agregarItem = () => {
     if (!medSel) { alert('Elegí un medicamento'); return }
@@ -58,12 +69,75 @@ export default function CrearReceta({ onDone, onCancel }) {
         <button className="link" onClick={onCancel}>← Volver</button>
       </div>
       <form onSubmit={handleSubmit}>
-        <input
-          placeholder="DNI del paciente"
-          value={dniPaciente}
-          onChange={(e) => setDniPaciente(e.target.value)}
-          required
-        />
+        <div className="field" style={{ position: 'relative' }}>
+          <label>Paciente</label>
+          {!pacienteSel ? (
+              <>
+                <input
+                    placeholder="Buscar por nombre o DNI..."
+                    value={busqueda}
+                    onChange={(e) => {
+                      const valor = e.target.value;
+                      setBusqueda(valor);
+                      if (valor.trim().length <= 1) {
+                        setResultados([]);
+                      }
+                    }}
+                />
+
+                {resultados.length > 0 && (
+                    <ul className="resultados-busqueda" style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      width: '100%',
+                      zIndex: 100,
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      listStyle: 'none',
+                      padding: 0,
+                      marginTop: '4px',
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                      background: 'white',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    }}>
+                      {resultados.map((p) => (
+                          <li
+                              key={p.dni}
+                              onClick={() => {
+                                setPacienteSel(p)
+                                setDniPaciente(p.dni)
+                                setBusqueda('')
+                                setResultados([])
+                              }}
+                              className="resultado-item"
+                              style={{ padding: '12px', cursor: 'pointer', borderBottom: '1px solid var(--border-soft)', color: '#333' }}
+                          >
+                            <strong>{p.nombre}</strong> (DNI: {p.dni})
+                          </li>
+                      ))}
+                    </ul>
+                )}
+              </>
+          ) : (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '12px',
+                background: 'var(--bg-soft)',
+                borderRadius: '8px',
+                border: '1px solid var(--primary-soft)'
+              }}>
+                <span><strong>{pacienteSel.nombre}</strong> (DNI: {pacienteSel.dni})</span>
+                <button type="button" className="link" onClick={() => {
+                  setPacienteSel(null)
+                  setDniPaciente('')
+                }}>Cambiar paciente</button>
+              </div>
+          )}
+        </div>
 
         <h3 style={{ marginTop: 20, marginBottom: 8 }}>Medicamentos</h3>
         {items.length > 0 && (
@@ -113,6 +187,7 @@ export default function CrearReceta({ onDone, onCancel }) {
           <button type="button" className="link" onClick={onCancel}>Cancelar</button>
         </div>
       </form>
+
       {error && <p className="error">{error}</p>}
       {ok && <p className="ok">{ok}</p>}
     </div>

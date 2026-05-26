@@ -239,4 +239,26 @@ class UsuarioService(
         }
         return usuarioRepository.save(usuario)
     }
+
+    fun buscarPacientes(query: String?): List<Map<String, Any?>> {
+        val todos = pacienteRepository.findAll()
+
+        val filtrados = if (query.isNullOrBlank()) {
+            todos
+        } else {
+            val q = query.lowercase()
+            todos.filter { p ->
+                val nombreCompleto = "${p.usuario?.nombre} ${p.usuario?.apellido}".lowercase()
+                nombreCompleto.contains(q) || p.dni?.contains(q) == true
+            }
+        }
+
+        return filtrados.map {
+            mapOf(
+                "id" to it.id,
+                "dni" to it.dni,
+                "nombre" to "${it.usuario?.nombre} ${it.usuario?.apellido}"
+            )
+        }
+    }
 }

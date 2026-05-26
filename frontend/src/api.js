@@ -22,6 +22,7 @@ export const api = {
   sesion: () => request('/usuarios/sesion'),
   perfil: () => request('/usuarios/perfil'),
   editar: (body) => request('/usuarios/editar', { method: 'PUT', body: JSON.stringify(body) }),
+  buscarPacientes: (q) => request(`/usuarios/pacientes/buscar${q ? '?q=' + q : ''}`),
 
   // Recetas
   recetasMias: () => request('/recetas/mias'),

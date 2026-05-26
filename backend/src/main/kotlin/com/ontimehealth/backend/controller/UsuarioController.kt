@@ -150,4 +150,12 @@ class UsuarioController(private val usuarioService: UsuarioService) {
             "rol" to session.getAttribute("usuarioRol")
         ))
     }
+
+    @GetMapping("/pacientes/buscar")
+    fun buscarPacientes(@RequestParam(required = false) q: String?, session: HttpSession): ResponseEntity<Any> {
+        session.getAttribute("usuarioId") ?: return ResponseEntity.status(401).body(mapOf("error" to "No hay sesión activa"))
+
+        val resultados = usuarioService.buscarPacientes(q)
+        return ResponseEntity.ok(resultados)
+    }
 }
