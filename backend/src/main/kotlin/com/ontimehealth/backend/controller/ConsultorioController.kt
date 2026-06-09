@@ -16,7 +16,7 @@ class ConsultorioController(private val consultorioRepository: ConsultorioReposi
                 "id" to it.id,
                 "nombre" to it.nombre,
                 "direccion" to it.direccion,
-                "telefono2" to it.telefono
+                "telefono" to it.telefono
             )
         }
         return ResponseEntity.ok(lista)
