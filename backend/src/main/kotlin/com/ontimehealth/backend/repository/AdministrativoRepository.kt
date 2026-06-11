@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 interface AdministrativoRepository : JpaRepository<Administrativos, Long> {
     fun findByUsuarioId(usuarioId: Long): Administrativos?
     fun deleteByUsuarioId(usuarioId: Long)
+    fun findByConsultorioId(consultorioId: Long): List<Administrativos>
 }

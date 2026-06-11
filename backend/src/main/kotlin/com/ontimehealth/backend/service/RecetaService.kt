@@ -21,7 +21,9 @@ class RecetaService(
     private val recetaRepository: RecetaRepository,
     private val pacienteRepository: PacienteRepository,
     private val profesionalRepository: ProfesionalRepository,
-    private val medicamentoRepository: MedicamentoRepository
+    private val medicamentoRepository: MedicamentoRepository,
+    private val notificacionService: NotificacionService,
+    private val administrativoRepository: AdministrativoRepository
 ) {
 
     @Transactional
@@ -66,8 +68,22 @@ class RecetaService(
             receta.items.add(recetaItem)
         }
 
-        return recetaRepository.save(receta)
-    }
+        val recetaGuardada = recetaRepository.save(receta)
+
+// Notificar paciente
+        receta.paciente?.usuario?.id?.let { pid ->
+            notificacionService.crear(pid, "RECETA_EMITIDA",
+                "Dr/a. ${medicoUser.nombre} ${medicoUser.apellido} emitió una receta para vos el ${receta.fecha}")
+        }
+// Notificar todos los admins
+        administrativoRepository.findAll().forEach { admin ->
+            admin.usuario?.id?.let { aid ->
+                notificacionService.crear(aid, "RECETA_EMITIDA",
+                    "Dr/a. ${medicoUser.nombre} ${medicoUser.apellido} emitió una receta para ${receta.paciente?.usuario?.nombre} ${receta.paciente?.usuario?.apellido} el ${receta.fecha}")
+            }
+        }
+
+        return recetaGuardada    }
 
     fun listarDePaciente(usuarioId: Long): List<Recetas> {
         val paciente = pacienteRepository.findByUsuarioId(usuarioId)

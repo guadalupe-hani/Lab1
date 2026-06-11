@@ -79,4 +79,10 @@ export const api = {
   crearMedicamento: (body) => request('/medicamentos', { method: 'POST', body: JSON.stringify(body) }),
   editarMedicamento: (id, body) => request(`/medicamentos/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
   eliminarMedicamento: (id) => request(`/medicamentos/${id}`, { method: 'DELETE' }),
+
+  // Notificaciones
+  notificaciones: () => request('/notificaciones'),
+  noLeidas: () => request('/notificaciones/no-leidas'),
+  marcarLeida: (id) => request(`/notificaciones/${id}/leer`, { method: 'PUT' }),
+  marcarTodasLeidas: () => request('/notificaciones/leer-todas', { method: 'PUT' }),
 }

@@ -1,4 +1,5 @@
 import { api } from '../api'
+import NotificacionesPanel from './NotificacionesPanel'
 
 function BrandLogo() {
   return (
@@ -38,6 +39,7 @@ export default function Navbar({ user, page, onNavigate, onLogout }) {
           )}
       </div>
       <div className="nav-user">
+        <NotificacionesPanel />
         <button
           className={'user-link' + (page === 'perfil' ? ' active' : '')}
           onClick={() => onNavigate('perfil')}

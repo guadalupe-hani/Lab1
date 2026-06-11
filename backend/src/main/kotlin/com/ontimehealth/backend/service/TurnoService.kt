@@ -19,7 +19,8 @@ class TurnoService(
     private val consultorioRepository: ConsultorioRepository,
     private val administrativoRepository: AdministrativoRepository,
     private val horarioRepository: HorarioTrabajoRepository,
-    private val diaLibreRepository: DiaLibreRepository
+    private val diaLibreRepository: DiaLibreRepository,
+    private val notificacionService: NotificacionService
 ) {
 
     private val SLOT_MIN = 30L
@@ -120,7 +121,27 @@ class TurnoService(
             this.hora = hora
             this.estado = "PROGRAMADO"
         }
-        return turnoRepository.save(turno)
+        val turnoGuardado = turnoRepository.save(turno)
+
+// Notificar paciente
+        paciente.usuario?.id?.let { pid ->
+            notificacionService.crear(pid, "TURNO_AGENDADO",
+                "Se agendó tu turno con Dr/a. ${profesional.usuario?.nombre} ${profesional.usuario?.apellido} para el $fecha a las ${hora.toString().substring(0, 5)}")
+        }
+// Notificar médico
+        profesional.usuario?.id?.let { mid ->
+            notificacionService.crear(mid, "TURNO_AGENDADO",
+                "Nuevo turno: ${paciente.usuario?.nombre} ${paciente.usuario?.apellido} el $fecha a las ${hora.toString().substring(0, 5)}")
+        }
+// Notificar admins del consultorio
+        administrativoRepository.findByConsultorioId(consultorioId).forEach { admin ->
+            admin.usuario?.id?.let { aid ->
+                notificacionService.crear(aid, "TURNO_AGENDADO",
+                    "Nuevo turno: ${paciente.usuario?.nombre} ${paciente.usuario?.apellido} con Dr/a. ${profesional.usuario?.nombre} ${profesional.usuario?.apellido} el $fecha")
+            }
+        }
+
+        return turnoGuardado
     }
 
     // ==================== CANCELAR ====================
@@ -157,7 +178,39 @@ class TurnoService(
         turno.estado = "CANCELADO"
         turno.canceladoPor = rol
         turno.motivoCancelacion = motivo
-        return turnoRepository.save(turno)
+
+        val turnoGuardado = turnoRepository.save(turno)
+
+        val pacienteUser = turno.paciente?.usuario
+        val medicoUser = turno.profesional?.usuario
+        val consultorioId = turno.consultorio?.id
+        val cancelador = turno.canceladoPor
+        val motivo = if (!turno.motivoCancelacion.isNullOrBlank()) ": ${turno.motivoCancelacion}" else ""
+
+        if (cancelador != "PACIENTE") {
+            pacienteUser?.id?.let { pid ->
+                val quien = if (cancelador == "MEDICO") "Dr/a. ${medicoUser?.nombre} ${medicoUser?.apellido}" else "el consultorio"
+                notificacionService.crear(pid, "TURNO_CANCELADO",
+                    "Tu turno del ${turno.fecha} a las ${turno.hora.toString().substring(0, 5)} fue cancelado por $quien$motivo")
+            }
+        }
+        if (cancelador != "MEDICO") {
+            medicoUser?.id?.let { mid ->
+                val quien = if (cancelador == "PACIENTE") "${pacienteUser?.nombre} ${pacienteUser?.apellido}" else "el consultorio"
+                notificacionService.crear(mid, "TURNO_CANCELADO",
+                    "El turno del ${turno.fecha} a las ${turno.hora.toString().substring(0, 5)} fue cancelado por $quien")
+            }
+        }
+        if (cancelador != "ADMINISTRATIVO" && consultorioId != null) {
+            administrativoRepository.findByConsultorioId(consultorioId).forEach { admin ->
+                admin.usuario?.id?.let { aid ->
+                    notificacionService.crear(aid, "TURNO_CANCELADO",
+                        "Turno cancelado: ${pacienteUser?.nombre} ${pacienteUser?.apellido} con Dr/a. ${medicoUser?.nombre} ${medicoUser?.apellido} el ${turno.fecha}$motivo")
+                }
+            }
+        }
+
+        return turnoGuardado
     }
 
     // ==================== LISTAR ====================
