@@ -22,7 +22,7 @@ export default function Agenda({ user }) {
     return (
       <div>
         <div className="card">
-          <h2>Mi agenda (admin)</h2>
+          <h2>Agenda</h2>
           {errorMedicos && <p className="error">{errorMedicos}</p>}
           {!errorMedicos && medicos.length === 0 && (
             <p>No hay médicos asignados a tu consultorio todavía. Cuando agregues horarios para un médico, va a aparecer acá.</p>

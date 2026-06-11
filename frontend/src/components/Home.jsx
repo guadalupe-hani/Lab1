@@ -64,8 +64,7 @@ export default function Home({ user, onNavigate }) {
       { icon: 'list', title: 'Mis turnos', description: 'Consultá tus turnos próximos y pasados.', button: 'Ver turnos', to: 'turnos' },
       { icon: 'agenda', title: 'Mi agenda', description: 'Gestioná horarios de trabajo y días libres.', button: 'Gestionar', to: 'agenda' },
       { icon: 'receta', title: 'Recetas', description: 'Emití nuevas recetas a tus pacientes.', button: 'Ver recetas', to: 'recetas' },
-      { icon: 'pill', title: 'Medicamentos', description: 'Administrá el catálogo de medicamentos.', button: 'Gestionar', to: 'medicamentos' },
-      { icon: 'user', title: 'Mi perfil', description: 'Actualizá tus datos profesionales.', button: 'Editar perfil', onClick: () => setEditing(true) },
+      { icon: 'user', title: 'Mi perfil', description: 'Actualizá tus datos profesionales.', button: 'Editar perfil', to: 'perfil' },
     )
   } else {
     cards.push(

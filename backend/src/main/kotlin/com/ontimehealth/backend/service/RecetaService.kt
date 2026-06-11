@@ -81,6 +81,8 @@ class RecetaService(
         return recetaRepository.findByProfesionalIdOrderByFechaDesc(profesional.id!!)
     }
 
+    fun listarTodas(): List<Recetas> = recetaRepository.findAllByOrderByFechaDesc()
+
     fun obtener(id: Long, usuarioId: Long, rol: String): Recetas {
         val receta = recetaRepository.findById(id).orElseThrow {
             IllegalArgumentException("Receta no encontrada")
@@ -88,16 +90,15 @@ class RecetaService(
         when (rol) {
             "PACIENTE" -> {
                 val paciente = pacienteRepository.findByUsuarioId(usuarioId)
-                if (receta.paciente?.id != paciente?.id) {
+                if (receta.paciente?.id != paciente?.id)
                     throw IllegalArgumentException("No tenés permiso para ver esta receta")
-                }
             }
             "MEDICO" -> {
                 val profesional = profesionalRepository.findByUsuarioId(usuarioId)
-                if (receta.profesional?.id != profesional?.id) {
+                if (receta.profesional?.id != profesional?.id)
                     throw IllegalArgumentException("No tenés permiso para ver esta receta")
-                }
             }
+            "ADMINISTRATIVO" -> { /* puede ver todas */ }
             else -> throw IllegalArgumentException("Rol no autorizado")
         }
         return receta

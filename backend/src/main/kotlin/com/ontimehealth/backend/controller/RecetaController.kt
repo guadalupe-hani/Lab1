@@ -50,6 +50,7 @@ class RecetaController(private val recetaService: RecetaService) {
             val lista = when (s.second) {
                 "PACIENTE" -> recetaService.listarDePaciente(s.first)
                 "MEDICO" -> recetaService.listarDeMedico(s.first)
+                "ADMINISTRATIVO" -> recetaService.listarTodas()
                 else -> return ResponseEntity.status(403).body(mapOf("error" to "Rol no autorizado"))
             }
             ResponseEntity.ok(lista.map { recetaService.toMap(it) })

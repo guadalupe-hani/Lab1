@@ -10,6 +10,9 @@ export default function ElegirSlot({ user, profesional, onDone, onCancel }) {
   const [agendando, setAgendando] = useState(false)
   const [slotSeleccionado, setSlotSeleccionado] = useState(null)
   const [mostrarExito, setMostrarExito] = useState(false)
+  const [busquedaPaciente, setBusquedaPaciente] = useState('')
+  const [sugerencias, setSugerencias] = useState([])
+  const [pacienteSel, setPacienteSel] = useState(null)
 
   useEffect(() => {
     api.disponibilidad(profesional.id)
@@ -73,14 +76,56 @@ export default function ElegirSlot({ user, profesional, onDone, onCancel }) {
       </div>
 
       {user.rol === 'ADMINISTRATIVO' && (
-        <div className="admin-dni">
-          <label>DNI del paciente:</label>
-          <input
-            placeholder="DNI"
-            value={dniPaciente}
-            onChange={(e) => setDniPaciente(e.target.value)}
-          />
-        </div>
+          <div className="admin-dni" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
+            <label>Buscar paciente (nombre, apellido o DNI):</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                  placeholder="Escribí para buscar..."
+                  value={busquedaPaciente}
+                  onChange={(e) => {
+                    setBusquedaPaciente(e.target.value)
+                    setPacienteSel(null)
+                    setDniPaciente('')
+                    if (e.target.value.length >= 2) {
+                      api.buscarPacientes(e.target.value).then(setSugerencias).catch(() => {})
+                    } else {
+                      setSugerencias([])
+                    }
+                  }}
+              />
+              {sugerencias.length > 0 && !pacienteSel && (
+                  <ul style={{
+                    position: 'absolute', top: '100%', left: 0, right: 0,
+                    background: '#fff', border: '1px solid var(--border)',
+                    borderRadius: 8, zIndex: 10, listStyle: 'none',
+                    margin: 0, padding: 0, maxHeight: 200, overflowY: 'auto',
+                    boxShadow: 'var(--shadow)'
+                  }}>
+                    {sugerencias.map((p) => (
+                        <li
+                            key={p.id}
+                            style={{ padding: '10px 14px', cursor: 'pointer', fontSize: 14 }}
+                            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--info)'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
+                            onClick={() => {
+                              setPacienteSel(p)
+                              setBusquedaPaciente(`${p.nombre} (DNI: ${p.dni})`)
+                              setDniPaciente(p.dni)
+                              setSugerencias([])
+                            }}
+                        >
+                          {p.nombre} — DNI: {p.dni}
+                        </li>
+                    ))}
+                  </ul>
+              )}
+            </div>
+            {pacienteSel && (
+                <span style={{ fontSize: 13, color: 'var(--primary)' }}>
+        ✓ Paciente seleccionado: {pacienteSel.nombre}
+      </span>
+            )}
+          </div>
       )}
 
       {loading && <p>Cargando disponibilidad...</p>}

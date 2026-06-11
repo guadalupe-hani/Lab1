@@ -28,12 +28,14 @@ export default function Navbar({ user, page, onNavigate, onLogout }) {
         <button className={linkClass('inicio')} onClick={() => onNavigate('inicio')}>Inicio</button>
         <button className={linkClass('turnos')} onClick={() => onNavigate('turnos')}>Turnos</button>
         <button className={linkClass('recetas')} onClick={() => onNavigate('recetas')}>Recetas</button>
-        {(user.rol === 'MEDICO' || user.rol === 'ADMINISTRATIVO') && (
-          <button className={linkClass('agenda')} onClick={() => onNavigate('agenda')}>Mi agenda</button>
-        )}
-        {(user.rol === 'MEDICO' || user.rol === 'ADMINISTRATIVO') && (
-          <button className={linkClass('medicamentos')} onClick={() => onNavigate('medicamentos')}>Medicamentos</button>
-        )}
+          {(user.rol === 'MEDICO' || user.rol === 'ADMINISTRATIVO') && (
+              <button className={linkClass('agenda')} onClick={() => onNavigate('agenda')}>
+                  {user.rol === 'ADMINISTRATIVO' ? 'Agenda' : 'Mi agenda'}
+              </button>
+          )}
+          {user.rol === 'ADMINISTRATIVO' && (
+              <button className={linkClass('medicamentos')} onClick={() => onNavigate('medicamentos')}>Medicamentos</button>
+          )}
       </div>
       <div className="nav-user">
         <button

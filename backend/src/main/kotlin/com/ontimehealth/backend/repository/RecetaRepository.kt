@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 interface RecetaRepository : JpaRepository<Recetas, Long> {
     fun findByPacienteIdOrderByFechaDesc(pacienteId: Long): List<Recetas>
     fun findByProfesionalIdOrderByFechaDesc(profesionalId: Long): List<Recetas>
+    fun findAllByOrderByFechaDesc(): List<Recetas>
 }

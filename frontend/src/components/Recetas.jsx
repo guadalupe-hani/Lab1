@@ -18,6 +18,7 @@ export default function Recetas({ user }) {
       .finally(() => setLoading(false))
   }
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { cargar() }, [])
 
   if (vista === 'crear') {
@@ -30,7 +31,7 @@ export default function Recetas({ user }) {
   return (
     <div className="card">
       <div className="card-header">
-        <h2>Mis recetas</h2>
+        <h2>{user.rol === 'ADMINISTRATIVO' ? 'Recetas' : 'Mis recetas'}</h2>
         {user.rol === 'MEDICO' && (
           <button onClick={() => setVista('crear')}>+ Nueva receta</button>
         )}
@@ -46,8 +47,11 @@ export default function Recetas({ user }) {
               <span className="receta-preview"> — {r.contenido?.slice(0, 60)}{r.contenido?.length > 60 ? '...' : ''}</span>
             </div>
             <div className="receta-meta">
-              {user.rol === 'PACIENTE' ? r.medicoNombre : `Paciente: ${r.pacienteNombre}`}
-            </div>
+              {user.rol === 'PACIENTE'
+                  ? `Dr/a. ${r.medicoNombre}`
+                  : user.rol === 'ADMINISTRATIVO'
+                      ? `${r.pacienteNombre} — Dr/a. ${r.medicoNombre}`
+                      : `Paciente: ${r.pacienteNombre}`}            </div>
           </li>
         ))}
       </ul>

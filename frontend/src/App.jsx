@@ -15,7 +15,11 @@ export default function App() {
   const [user, setUser] = useState(null)
   const [cargandoSesion, setCargandoSesion] = useState(true)
   const [view, setView] = useState('login')
-  const [page, setPage] = useState('inicio')
+    const [page, setPage] = useState(() => {
+        const path = window.location.pathname.slice(1)
+        const validas = ['inicio', 'recetas', 'agenda', 'turnos', 'medicamentos', 'perfil']
+        return validas.includes(path) ? path : 'inicio'
+    })
 
     useEffect(() => {
         api.perfil()
@@ -92,7 +96,7 @@ export default function App() {
         </div>
       </div>
       {view === 'login'
-        ? <Login onSuccess={setUser} onSwitch={() => setView('registro')} />
+        ? <Login onSuccess={(u) => { setUser(u); setPage('inicio') }} onSwitch={() => setView('registro')} />
         : <Registro onSwitch={() => setView('login')} />}
       <p className="tagline">Gestiona tus turnos médicos de forma inteligente</p>
     </div>
