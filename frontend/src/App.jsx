@@ -11,6 +11,7 @@ import EditarPerfil from './components/EditarPerfil'
 import { api } from './api'
 import './App.css'
 import Chat from './components/Chat'
+import FilaEnVivo from './components/FilaEnVivo'
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -18,7 +19,7 @@ export default function App() {
   const [view, setView] = useState('login')
     const [page, setPage] = useState(() => {
         const path = window.location.pathname.slice(1)
-        const validas = ['inicio', 'recetas', 'agenda', 'turnos', 'medicamentos', 'perfil', 'chat']
+        const validas = ['inicio', 'recetas', 'agenda', 'turnos', 'medicamentos', 'perfil', 'chat', 'fila']
         return validas.includes(path) ? path : 'inicio'
     })
 
@@ -81,6 +82,7 @@ export default function App() {
           />
         )}
         {page === 'chat' && (<Chat user={user} />)}
+        {page === 'fila' && (<FilaEnVivo user={user} />)}
       </div>
     </div>
   )

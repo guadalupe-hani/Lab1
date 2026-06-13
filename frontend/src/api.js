@@ -78,6 +78,12 @@ export const api = {
   agendarTurnoAdmin: (body) => request('/turnos/admin', { method: 'POST', body: JSON.stringify(body) }),
   cancelarTurno: (id, motivo) => request(`/turnos/${id}/cancelar`, { method: 'PUT', body: JSON.stringify({ motivo: motivo || null }) }),
 
+  // Fila en vivo
+  filaEnVivo: () => request('/turnos/fila'),
+  reportarRetrasoPaciente: (turnoId, minutos) => request(`/turnos/${turnoId}/retraso`, { method: 'PUT', body: JSON.stringify({ minutos }) }),
+  reportarRetrasoMedico: (minutos) => request('/turnos/medico/retraso', { method: 'PUT', body: JSON.stringify({ minutos }) }),
+  marcarEstadoPaciente: (turnoId, estado) => request(`/turnos/${turnoId}/estado-paciente`, { method: 'PUT', body: JSON.stringify({ estado }) }),
+
   // Medicamentos
   medicamentos: () => request('/medicamentos'),
   medicamentosActivos: () => request('/medicamentos/activos'),

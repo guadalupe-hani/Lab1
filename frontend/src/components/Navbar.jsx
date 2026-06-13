@@ -58,6 +58,9 @@ export default function Navbar({ user, page, onNavigate, onLogout }) {
             <div className="nav-links">
                 <button className={linkClass('inicio')} onClick={() => onNavigate('inicio')}>Inicio</button>
                 <button className={linkClass('turnos')} onClick={() => onNavigate('turnos')}>Turnos</button>
+                {(user.rol === 'PACIENTE' || user.rol === 'MEDICO') && (
+                    <button className={linkClass('fila')} onClick={() => onNavigate('fila')}>Fila en vivo</button>
+                )}
                 <button className={linkClass('recetas')} onClick={() => onNavigate('recetas')}>Recetas</button>
                 {(user.rol === 'MEDICO' || user.rol === 'ADMINISTRATIVO') && (
                     <button className={linkClass('agenda')} onClick={() => onNavigate('agenda')}>

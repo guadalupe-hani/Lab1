@@ -1,13 +1,17 @@
 package com.ontimehealth.backend.service
 
+import com.ontimehealth.backend.model.FilaProfesionalDia
 import com.ontimehealth.backend.model.Turnos
 import com.ontimehealth.backend.repository.*
 import com.ontimehealth.backend.repository.DiaLibreRepository
+import com.ontimehealth.backend.repository.FilaProfesionalDiaRepository
 import com.ontimehealth.backend.repository.HorarioTrabajoRepository
 import com.ontimehealth.backend.repository.TurnoRepository
 import jakarta.transaction.Transactional
+import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -20,10 +24,16 @@ class TurnoService(
     private val administrativoRepository: AdministrativoRepository,
     private val horarioRepository: HorarioTrabajoRepository,
     private val diaLibreRepository: DiaLibreRepository,
-    private val notificacionService: NotificacionService
+    private val filaRepository: FilaProfesionalDiaRepository,
+    private val notificacionService: NotificacionService,
+    private val messagingTemplate: SimpMessagingTemplate
 ) {
 
     private val SLOT_MIN = 30L
+    private val OFFSET_MIN = -120
+    private val OFFSET_MAX = 240
+    private val ESTADOS_ACTIVOS_FILA = setOf("ESPERANDO", "EN_ATENCION")
+    private val ESTADOS_PACIENTE_VALIDOS = setOf("ESPERANDO", "EN_ATENCION", "ATENDIDO", "AUSENTE")
 
     // ==================== DISPONIBILIDAD ====================
 
@@ -210,6 +220,17 @@ class TurnoService(
             }
         }
 
+        if (turno.fecha == LocalDate.now()) {
+            turno.profesional?.id?.let { profesionalId ->
+                // Si el turno cancelado todavía estaba activo en la fila, liberar ese slot
+                // reduce la espera estimada del resto.
+                if ((turno.estadoPaciente ?: "ESPERANDO") in ESTADOS_ACTIVOS_FILA) {
+                    ajustarOffset(profesionalId, -SLOT_MIN.toInt())
+                }
+                broadcastFila(profesionalId)
+            }
+        }
+
         return turnoGuardado
     }
 
@@ -268,4 +289,154 @@ class TurnoService(
         "consultorioNombre" to t.consultorio?.nombre,
         "consultorioDireccion" to t.consultorio?.direccion
     )
+
+    // ==================== FILA EN VIVO ====================
+
+    /** Devuelve la fila de hoy de un profesional, ya calculada (posición, hora estimada, etc). */
+    fun obtenerFila(profesionalId: Long, rol: String, usuarioId: Long): Map<String, Any?> {
+        val hoy = LocalDate.now()
+        val turnos = turnoRepository.findByProfesionalIdAndFechaAndEstadoOrderByHoraAsc(profesionalId, hoy, "PROGRAMADO")
+        val offset = filaRepository.findByProfesionalIdAndFecha(profesionalId, hoy)?.offsetMinutos ?: 0
+
+        var posicion = 0
+        val items = turnos.map { t ->
+            val estadoPaciente = t.estadoPaciente ?: "ESPERANDO"
+            val activo = estadoPaciente in ESTADOS_ACTIVOS_FILA
+            if (activo) posicion++
+            val esTuyo = rol == "PACIENTE" && t.paciente?.usuario?.id == usuarioId
+
+            val item = mutableMapOf<String, Any?>(
+                "turnoId" to t.id,
+                "hora" to t.hora?.toString(),
+                "horaEstimada" to t.hora?.plusMinutes(offset.toLong())?.toString(),
+                "estadoPaciente" to estadoPaciente,
+                "posicion" to if (activo) posicion else null
+            )
+            if (rol != "PACIENTE" || esTuyo) {
+                item["pacienteId"] = t.paciente?.id
+                item["pacienteNombre"] = "${t.paciente?.usuario?.nombre ?: ""} ${t.paciente?.usuario?.apellido ?: ""}".trim()
+                item["pacienteDni"] = t.paciente?.dni
+            }
+            if (rol == "PACIENTE") {
+                item["esTuyo"] = esTuyo
+            }
+            item
+        }
+
+        val profesionalUsuarioId = profesionalRepository.findById(profesionalId).orElse(null)?.usuario?.id
+
+        return mapOf(
+            "profesionalId" to profesionalId,
+            "profesionalUsuarioId" to profesionalUsuarioId,
+            "fecha" to hoy.toString(),
+            "offsetMinutos" to offset,
+            "turnos" to items
+        )
+    }
+
+    /** Fila del usuario logueado: la propia agenda de hoy (médico) o la fila del turno de hoy (paciente). */
+    fun obtenerFilaPropia(usuarioId: Long, rol: String): Map<String, Any?> = when (rol) {
+        "MEDICO" -> {
+            val profesional = profesionalRepository.findByUsuarioId(usuarioId)
+                ?: throw IllegalArgumentException("Profesional no encontrado")
+            val fila = obtenerFila(profesional.id!!, rol, usuarioId)
+            fila + mapOf("tieneFilaHoy" to (fila["turnos"] as List<*>).isNotEmpty())
+        }
+        "PACIENTE" -> {
+            val paciente = pacienteRepository.findByUsuarioId(usuarioId)
+                ?: throw IllegalArgumentException("Paciente no encontrado")
+            val turnoHoy = turnoRepository.findByPacienteIdAndFechaAndEstado(paciente.id!!, LocalDate.now(), "PROGRAMADO").firstOrNull()
+                ?: return mapOf("tieneFilaHoy" to false, "turnos" to emptyList<Any>())
+            val fila = obtenerFila(turnoHoy.profesional!!.id!!, rol, usuarioId)
+            fila + mapOf("tieneFilaHoy" to true)
+        }
+        else -> throw IllegalArgumentException("Rol no autorizado")
+    }
+
+    @Transactional
+    fun reportarRetrasoPaciente(usuarioId: Long, rol: String, turnoId: Long, minutos: Int): Map<String, Any?> {
+        if (rol != "PACIENTE") throw IllegalArgumentException("Solo pacientes")
+        if (minutos < 1 || minutos > 60) throw IllegalArgumentException("El retraso debe ser entre 1 y 60 minutos")
+
+        val turno = turnoRepository.findById(turnoId).orElseThrow { IllegalArgumentException("Turno no encontrado") }
+        val paciente = pacienteRepository.findByUsuarioId(usuarioId)
+        if (turno.paciente?.id != paciente?.id) throw IllegalArgumentException("Este turno no te pertenece")
+        if (turno.fecha != LocalDate.now()) throw IllegalArgumentException("Este turno no es de hoy")
+        if (turno.estado != "PROGRAMADO") throw IllegalArgumentException("Este turno ya no está activo")
+
+        val profesionalId = turno.profesional?.id ?: throw IllegalArgumentException("Turno sin profesional")
+        ajustarOffset(profesionalId, minutos)
+        broadcastFila(profesionalId)
+        return obtenerFila(profesionalId, rol, usuarioId)
+    }
+
+    @Transactional
+    fun reportarRetrasoMedico(usuarioId: Long, rol: String, minutos: Int): Map<String, Any?> {
+        if (rol != "MEDICO") throw IllegalArgumentException("Solo médicos")
+        if (minutos == 0 || minutos < -60 || minutos > 120) throw IllegalArgumentException("El ajuste debe ser entre -60 y 120 minutos")
+
+        val profesional = profesionalRepository.findByUsuarioId(usuarioId)
+            ?: throw IllegalArgumentException("Profesional no encontrado")
+        val profesionalId = profesional.id!!
+        ajustarOffset(profesionalId, minutos)
+        broadcastFila(profesionalId)
+        return obtenerFila(profesionalId, rol, usuarioId)
+    }
+
+    @Transactional
+    fun marcarEstadoPaciente(usuarioId: Long, rol: String, turnoId: Long, estado: String): Map<String, Any?> {
+        if (estado !in ESTADOS_PACIENTE_VALIDOS) throw IllegalArgumentException("Estado inválido")
+
+        val turno = turnoRepository.findById(turnoId).orElseThrow { IllegalArgumentException("Turno no encontrado") }
+        if (turno.fecha != LocalDate.now()) throw IllegalArgumentException("Este turno no es de hoy")
+        if (turno.estado != "PROGRAMADO") throw IllegalArgumentException("Este turno ya no está activo")
+
+        when (rol) {
+            "MEDICO" -> {
+                val profesional = profesionalRepository.findByUsuarioId(usuarioId)
+                if (turno.profesional?.id != profesional?.id) throw IllegalArgumentException("Este turno no te pertenece")
+            }
+            "ADMINISTRATIVO" -> {
+                val consultorioAdmin = obtenerConsultorioAdmin(usuarioId)
+                if (turno.consultorio?.id != consultorioAdmin) throw IllegalArgumentException("Este turno no es de tu consultorio")
+            }
+            else -> throw IllegalArgumentException("Rol no autorizado")
+        }
+
+        val profesionalId = turno.profesional?.id ?: throw IllegalArgumentException("Turno sin profesional")
+
+        // Si el médico marca a alguien como atendido, ajustamos el retraso acumulado
+        // según si lo atendió antes o después de la hora estimada.
+        if (estado == "ATENDIDO") {
+            val offsetActual = filaRepository.findByProfesionalIdAndFecha(profesionalId, LocalDate.now())?.offsetMinutos ?: 0
+            val horaEstimada = turno.hora!!.plusMinutes(offsetActual.toLong())
+            val diferencia = Duration.between(horaEstimada, LocalTime.now()).toMinutes().toInt()
+            if (diferencia != 0) ajustarOffset(profesionalId, diferencia)
+        }
+
+        turno.estadoPaciente = estado
+        turnoRepository.save(turno)
+
+        broadcastFila(profesionalId)
+        return obtenerFila(profesionalId, rol, usuarioId)
+    }
+
+    private fun ajustarOffset(profesionalId: Long, deltaMinutos: Int) {
+        val hoy = LocalDate.now()
+        val fila = filaRepository.findByProfesionalIdAndFecha(profesionalId, hoy)
+            ?: FilaProfesionalDia().apply {
+                profesional = profesionalRepository.findById(profesionalId).orElseThrow {
+                    IllegalArgumentException("Profesional no encontrado")
+                }
+                fecha = hoy
+                offsetMinutos = 0
+            }
+        fila.offsetMinutos = (fila.offsetMinutos + deltaMinutos).coerceIn(OFFSET_MIN, OFFSET_MAX)
+        filaRepository.save(fila)
+    }
+
+    private fun broadcastFila(profesionalId: Long) {
+        val payload: Any = mapOf("profesionalId" to profesionalId, "ts" to System.currentTimeMillis())
+        messagingTemplate.convertAndSend("/topic/fila/$profesionalId", payload)
+    }
 }

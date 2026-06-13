@@ -10,6 +10,8 @@ import java.time.LocalTime
 data class AgendarPacienteRequest(val profesionalId: Long, val fecha: String, val hora: String)
 data class AgendarAdminRequest(val dniPaciente: String, val profesionalId: Long, val fecha: String, val hora: String)
 data class CancelarRequest(val motivo: String?)
+data class RetrasoRequest(val minutos: Int)
+data class EstadoPacienteRequest(val estado: String)
 
 @RestController
 @RequestMapping("/api/turnos")
@@ -89,6 +91,46 @@ class TurnoController(private val turnoService: TurnoService) {
                 else -> return ResponseEntity.status(403).body(mapOf("error" to "Rol no autorizado"))
             }
             ResponseEntity.ok(lista.map { turnoService.toMap(it) })
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        }
+    }
+
+    @GetMapping("/fila")
+    fun fila(session: HttpSession): ResponseEntity<Any> {
+        val s = sesion(session) ?: return ResponseEntity.status(401).body(mapOf("error" to "No hay sesión activa"))
+        return try {
+            ResponseEntity.ok(turnoService.obtenerFilaPropia(s.first, s.second))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        }
+    }
+
+    @PutMapping("/{id}/retraso")
+    fun reportarRetrasoPaciente(@PathVariable id: Long, @RequestBody req: RetrasoRequest, session: HttpSession): ResponseEntity<Any> {
+        val s = sesion(session) ?: return ResponseEntity.status(401).body(mapOf("error" to "No hay sesión activa"))
+        return try {
+            ResponseEntity.ok(turnoService.reportarRetrasoPaciente(s.first, s.second, id, req.minutos))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        }
+    }
+
+    @PutMapping("/medico/retraso")
+    fun reportarRetrasoMedico(@RequestBody req: RetrasoRequest, session: HttpSession): ResponseEntity<Any> {
+        val s = sesion(session) ?: return ResponseEntity.status(401).body(mapOf("error" to "No hay sesión activa"))
+        return try {
+            ResponseEntity.ok(turnoService.reportarRetrasoMedico(s.first, s.second, req.minutos))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        }
+    }
+
+    @PutMapping("/{id}/estado-paciente")
+    fun marcarEstadoPaciente(@PathVariable id: Long, @RequestBody req: EstadoPacienteRequest, session: HttpSession): ResponseEntity<Any> {
+        val s = sesion(session) ?: return ResponseEntity.status(401).body(mapOf("error" to "No hay sesión activa"))
+        return try {
+            ResponseEntity.ok(turnoService.marcarEstadoPaciente(s.first, s.second, id, req.estado))
         } catch (e: IllegalArgumentException) {
             ResponseEntity.badRequest().body(mapOf("error" to e.message))
         }

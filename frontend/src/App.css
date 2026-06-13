@@ -477,7 +477,78 @@ button.link:hover { background: none; color: var(--primary-hover); }
   font-style: italic;
   color: var(--danger);
 }
-.turno-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.turno-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+
+/* === Fila en vivo === */
+.fila-bar-wrap {
+  margin-bottom: 12px;
+}
+
+.fila-bar-track {
+  width: 100%;
+  height: 14px;
+  background: var(--border-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.fila-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.fila-bar-label {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.fila-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.fila-actions span { color: var(--muted); }
+
+.chat-aviso-atraso {
+  margin: 0;
+  border-radius: 0;
+  border-top: 1px solid var(--border-soft);
+  background: var(--bg-soft);
+}
+
+.fila-item.es-tuyo {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+}
+
+.fila-posicion {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.fila-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.fila-badge.estado-esperando { background: var(--info-strong); color: var(--primary); }
+.fila-badge.estado-en_atencion { background: #fef9c3; color: #92400e; }
+.fila-badge.estado-atendido { background: #dcfce7; color: #166534; }
+.fila-badge.estado-ausente { background: #fee2e2; color: var(--danger); }
 
 /* === Búsqueda médicos === */
 .medico-header {

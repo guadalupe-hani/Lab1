@@ -10,6 +10,8 @@ export default function Chat({ user }) {
     const [texto, setTexto] = useState('')
     const [conectado, setConectado] = useState(false)
     const [noLeidosPor, setNoLeidosPor] = useState({})
+    const [filaPropia, setFilaPropia] = useState(null)
+    const [avisando, setAvisando] = useState(false)
     const clientRef = useRef(null)
     const listRef = useRef(null)
 
@@ -53,6 +55,12 @@ export default function Chat({ user }) {
             .catch(() => {})
     }, [])
 
+    // Si soy paciente, cargo mi turno de hoy para poder avisar atraso por chat
+    useEffect(() => {
+        if (user.rol !== 'PACIENTE') return
+        api.filaEnVivo().then(setFilaPropia).catch(() => {})
+    }, [user.rol])
+
     // Cargar historial al seleccionar contacto y limpiar badge
     useEffect(() => {
         if (!contactoSel) return
@@ -83,6 +91,36 @@ export default function Chat({ user }) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault()
             enviar()
+        }
+    }
+
+    const propioTurnoHoy = filaPropia?.tieneFilaHoy
+        ? filaPropia.turnos?.find((t) => t.esTuyo)
+        : null
+
+    const puedeAvisarAtraso =
+        user.rol === 'PACIENTE' &&
+        !!propioTurnoHoy &&
+        !!contactoSel &&
+        contactoSel.id === filaPropia?.profesionalUsuarioId
+
+    const avisarRetraso = async (minutos) => {
+        if (!propioTurnoHoy || !contactoSel || !conectado) return
+        setAvisando(true)
+        try {
+            await api.reportarRetrasoPaciente(propioTurnoHoy.turnoId, minutos)
+            clientRef.current.publish({
+                destination: '/app/chat/enviar',
+                body: JSON.stringify({
+                    receptorId: contactoSel.id,
+                    contenido: `Aviso: voy a llegar ${minutos} minutos tarde a mi turno.`,
+                    turnoId: propioTurnoHoy.turnoId,
+                }),
+            })
+        } catch (e) {
+            alert(e.message)
+        } finally {
+            setAvisando(false)
         }
     }
 
@@ -149,6 +187,15 @@ export default function Chat({ user }) {
                                     </div>
                                 ))}
                         </div>
+
+                        {puedeAvisarAtraso && (
+                            <div className="fila-actions chat-aviso-atraso">
+                                <span>¿Vas a llegar tarde?</span>
+                                <button className="secondary" disabled={avisando} onClick={() => avisarRetraso(5)}>+5 min</button>
+                                <button className="secondary" disabled={avisando} onClick={() => avisarRetraso(10)}>+10 min</button>
+                                <button className="secondary" disabled={avisando} onClick={() => avisarRetraso(15)}>+15 min</button>
+                            </div>
+                        )}
 
                         <div className="chat-input-area">
               <textarea
