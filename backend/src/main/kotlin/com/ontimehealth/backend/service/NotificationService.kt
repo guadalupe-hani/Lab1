@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service
 @Service
 class NotificacionService(
     private val notificacionRepository: NotificacionRepository,
-    private val usuarioRepository: UsuarioRepository
+    private val usuarioRepository: UsuarioRepository,
+    private val emailService: EmailService
 ) {
 
     @Transactional
@@ -21,6 +22,14 @@ class NotificacionService(
             this.mensaje = mensaje
         }
         notificacionRepository.save(n)
+
+        val asunto = when (tipo) {
+            "TURNO_AGENDADO" -> "Turno agendado - On-Time Health"
+            "TURNO_CANCELADO" -> "Turno cancelado - On-Time Health"
+            "RECETA_EMITIDA" -> "Nueva receta emitida - On-Time Health"
+            else -> "Notificación - On-Time Health"
+        }
+        usuario.email?.let { emailService.enviar(it, asunto, mensaje) }
     }
 
     fun listar(usuarioId: Long): List<Map<String, Any?>> =
