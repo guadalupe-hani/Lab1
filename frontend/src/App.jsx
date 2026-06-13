@@ -10,6 +10,7 @@ import Medicamentos from './components/Medicamentos'
 import EditarPerfil from './components/EditarPerfil'
 import { api } from './api'
 import './App.css'
+import Chat from './components/Chat'
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -17,7 +18,7 @@ export default function App() {
   const [view, setView] = useState('login')
     const [page, setPage] = useState(() => {
         const path = window.location.pathname.slice(1)
-        const validas = ['inicio', 'recetas', 'agenda', 'turnos', 'medicamentos', 'perfil']
+        const validas = ['inicio', 'recetas', 'agenda', 'turnos', 'medicamentos', 'perfil', 'chat']
         return validas.includes(path) ? path : 'inicio'
     })
 
@@ -79,6 +80,7 @@ export default function App() {
             onLogout={() => setUser(null)}
           />
         )}
+        {page === 'chat' && (<Chat user={user} />)}
       </div>
     </div>
   )

@@ -90,4 +90,10 @@ export const api = {
   noLeidas: () => request('/notificaciones/no-leidas'),
   marcarLeida: (id) => request(`/notificaciones/${id}/leer`, { method: 'PUT' }),
   marcarTodasLeidas: () => request('/notificaciones/leer-todas', { method: 'PUT' }),
+
+  // Chat
+  chatContactos: () => request('/chat/contactos'),
+  chatConversacion: (otroUsuarioId) => request(`/chat/conversacion/${otroUsuarioId}`),
+  chatNoLeidos: () => request('/chat/no-leidos'),
+  chatNoLeidosPorEmisor: () => request('/chat/no-leidos-por-emisor'),
 }

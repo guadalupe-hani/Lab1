@@ -32,6 +32,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("com.github.librepdf:openpdf:1.3.30")
+	implementation("org.springframework.boot:spring-boot-starter-websocket")
 }
 
 kotlin {
