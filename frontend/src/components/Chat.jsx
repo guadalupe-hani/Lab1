@@ -26,6 +26,18 @@ export default function Chat({ user }) {
                     const mensaje = JSON.parse(frame.body)
                     setMensajes((prev) => {
                         if (prev.some((m) => m.id === mensaje.id)) return prev
+                        // Reemplazar el mensaje optimista que generamos al enviar, si existe
+                        const idx = prev.findIndex((m) =>
+                            m._pendiente &&
+                            m.emisorId === mensaje.emisorId &&
+                            m.receptorId === mensaje.receptorId &&
+                            m.contenido === mensaje.contenido
+                        )
+                        if (idx !== -1) {
+                            const copia = [...prev]
+                            copia[idx] = mensaje
+                            return copia
+                        }
                         return [...prev, mensaje]
                     })
                     // Si el mensaje es de otro (no del contacto abierto), sumar al badge
@@ -80,9 +92,18 @@ export default function Chat({ user }) {
 
     const enviar = () => {
         if (!texto.trim() || !contactoSel || !conectado) return
+        const contenido = texto.trim()
+        setMensajes((prev) => [...prev, {
+            id: `tmp-${Date.now()}`,
+            emisorId: user.id,
+            receptorId: contactoSel.id,
+            contenido,
+            fechaEnvio: new Date().toISOString(),
+            _pendiente: true,
+        }])
         clientRef.current.publish({
             destination: '/app/chat/enviar',
-            body: JSON.stringify({ receptorId: contactoSel.id, contenido: texto.trim() }),
+            body: JSON.stringify({ receptorId: contactoSel.id, contenido }),
         })
         setTexto('')
     }
@@ -109,11 +130,20 @@ export default function Chat({ user }) {
         setAvisando(true)
         try {
             await api.reportarRetrasoPaciente(propioTurnoHoy.turnoId, minutos)
+            const contenido = `Aviso: voy a llegar ${minutos} minutos tarde a mi turno.`
+            setMensajes((prev) => [...prev, {
+                id: `tmp-${Date.now()}`,
+                emisorId: user.id,
+                receptorId: contactoSel.id,
+                contenido,
+                fechaEnvio: new Date().toISOString(),
+                _pendiente: true,
+            }])
             clientRef.current.publish({
                 destination: '/app/chat/enviar',
                 body: JSON.stringify({
                     receptorId: contactoSel.id,
-                    contenido: `Aviso: voy a llegar ${minutos} minutos tarde a mi turno.`,
+                    contenido,
                     turnoId: propioTurnoHoy.turnoId,
                 }),
             })
