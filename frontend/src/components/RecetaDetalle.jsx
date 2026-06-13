@@ -26,6 +26,22 @@ export default function RecetaDetalle({ id, user, onBack }) {
             setError(err.message)
         }
     }
+
+    const handleDescargarPdf = async () => {
+        try {
+            const blob = await api.recetaPdf(id)
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `receta-${id}.pdf`
+            document.body.appendChild(a)
+            a.click()
+            a.remove()
+            window.URL.revokeObjectURL(url)
+        } catch (err) {
+            setError(err.message)
+        }
+    }
   if (error) return (
     <div className="card">
       <p className="error">{error}</p>
@@ -38,7 +54,10 @@ export default function RecetaDetalle({ id, user, onBack }) {
     <div className="card receta-detalle">
       <div className="card-header">
         <h2>Receta #{receta.id}</h2>
-        <button className="link" onClick={onBack}>← Volver</button>
+        <div>
+          <button onClick={handleDescargarPdf}>Descargar PDF</button>
+          <button className="link" onClick={onBack}>← Volver</button>
+        </div>
       </div>
       <p><strong>Fecha:</strong> {receta.fecha}</p>
       <p><strong>Paciente:</strong> {receta.pacienteNombre} (DNI {receta.pacienteDni})</p>

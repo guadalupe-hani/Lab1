@@ -1,8 +1,11 @@
 package com.ontimehealth.backend.controller
 
 import com.ontimehealth.backend.service.ItemRecetaData
+import com.ontimehealth.backend.service.PdfService
 import com.ontimehealth.backend.service.RecetaService
 import jakarta.servlet.http.HttpSession
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -22,7 +25,10 @@ data class CrearRecetaRequest(
 @RestController
 @RequestMapping("/api/recetas")
 @CrossOrigin(origins = ["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5500"], allowCredentials = "true")
-class RecetaController(private val recetaService: RecetaService) {
+class RecetaController(
+    private val recetaService: RecetaService,
+    private val pdfService: PdfService
+) {
 
     private fun sesion(session: HttpSession): Pair<Long, String>? {
         val id = session.getAttribute("usuarioId") as? Long ?: return null
@@ -67,6 +73,21 @@ class RecetaController(private val recetaService: RecetaService) {
             ResponseEntity.ok(recetaService.toMap(r))
         } catch (e: IllegalArgumentException) {
             ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        }
+    }
+
+    @GetMapping("/{id}/pdf")
+    fun descargarPdf(@PathVariable id: Long, session: HttpSession): ResponseEntity<ByteArray> {
+        val s = sesion(session) ?: return ResponseEntity.status(401).build()
+        return try {
+            val r = recetaService.obtener(id, s.first, s.second)
+            val pdf = pdfService.generarRecetaPdf(r)
+            ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=receta-$id.pdf")
+                .body(pdf)
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().build()
         }
     }
 

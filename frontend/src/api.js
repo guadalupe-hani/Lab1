@@ -29,6 +29,11 @@ export const api = {
   recetaDetalle: (id) => request(`/recetas/${id}`),
   crearReceta: (body) => request('/recetas', { method: 'POST', body: JSON.stringify(body) }),
   eliminarReceta: (id) => request(`/recetas/${id}`, { method: 'DELETE' }),
+  recetaPdf: async (id) => {
+    const res = await fetch(`${BASE_URL}/recetas/${id}/pdf`, { credentials: 'include' })
+    if (!res.ok) throw new Error('No se pudo generar el PDF')
+    return res.blob()
+  },
 
   // Consultorios
   consultorios: () => request('/consultorios'),
