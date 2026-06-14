@@ -1483,3 +1483,20 @@ button.link:hover { background: none; color: var(--primary-hover); }
 .sala-btn-ausente:hover:not(:disabled) { background: #b91c1c; }
 .sala-btn-reset { background: #94a3b8; color: #fff; }
 .sala-btn-reset:hover:not(:disabled) { background: #64748b; }
+
+.btn-gcal {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  background: #fff;
+  border: 1px solid #4285f4;
+  color: #4285f4;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-right: 0.5rem;
+}
+.btn-gcal:hover {
+  background: #4285f4;
+  color: #fff;
+}

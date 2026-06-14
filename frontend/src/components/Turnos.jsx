@@ -5,6 +5,24 @@ import ElegirSlot from './ElegirSlot'
 import ConfirmModal from './ConfirmModal'
 import PromptModal from './PromptModal'
 
+function googleCalendarUrl(t) {
+  const fecha = t.fecha?.replace(/-/g, '') ?? ''
+  const [h, m] = (t.hora?.slice(0, 5) ?? '00:00').split(':').map(Number)
+  const pad = (n) => String(n).padStart(2, '0')
+  const inicio = `${fecha}T${pad(h)}${pad(m)}00`
+  const finMin = m + 30
+  const finH = h + Math.floor(finMin / 60)
+  const fin = `${fecha}T${pad(finH % 24)}${pad(finMin % 60)}00`
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: `Turno médico — Dr/a. ${t.profesionalNombre ?? ''}`,
+    dates: `${inicio}/${fin}`,
+    details: `Especialidad: ${t.profesionalEspecialidad || 'sin especificar'}`,
+    location: `${t.consultorioNombre ?? ''} — ${t.consultorioDireccion ?? ''}`,
+  })
+  return `https://calendar.google.com/calendar/render?${params.toString()}`
+}
+
 export default function Turnos({ user }) {
   const [lista, setLista] = useState([])
   const [loading, setLoading] = useState(true)
@@ -129,7 +147,19 @@ export default function Turnos({ user }) {
               </div>
               <div className="turno-actions">
                 {t.estado === 'PROGRAMADO' && (
-                  <button className="link danger" onClick={() => handleClickCancelar(t.id)}>Cancelar</button>
+                    <>
+                      {user.rol === 'PACIENTE' && (
+                          <a
+                              href={googleCalendarUrl(t)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="btn-gcal"
+                          >
+                            + Google Calendar
+                          </a>
+                      )}
+                      <button className="link danger" onClick={() => handleClickCancelar(t.id)}>Cancelar</button>
+                    </>
                 )}
                 {t.estado === 'CANCELADO' && user.rol === 'PACIENTE' && canceladoPorOtro && (
                   <button onClick={() => handleReagendar(t)}>Reagendar</button>
