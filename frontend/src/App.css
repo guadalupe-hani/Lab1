@@ -1329,3 +1329,157 @@ button.link:hover { background: none; color: var(--primary-hover); }
   background: var(--primary-soft);
   border-color: var(--primary);
 }
+
+/* ===== SALA DE ESPERA - PANTALLA TV ===== */
+.tv-screen {
+  min-height: 100vh;
+  background: #0d1117;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', sans-serif;
+}
+.tv-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: #161b22;
+  border-bottom: 2px solid #238636;
+}
+.tv-brand { font-size: 1.4rem; font-weight: 700; color: #58a6ff; }
+.tv-consultorio { font-size: 1.1rem; color: #8b949e; }
+.tv-reloj { font-size: 2.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.tv-atencion-zona { padding: 2rem 2rem 1rem; }
+.tv-atencion-card {
+  background: #0e4429;
+  border: 2px solid #2ea043;
+  border-radius: 12px;
+  padding: 2rem 3rem;
+  text-align: center;
+}
+.tv-atencion-card.tv-atencion-vacia { background: #1c2128; border-color: #444; }
+.tv-atencion-etiqueta {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #2ea043;
+  margin-bottom: 0.5rem;
+}
+.tv-atencion-card.tv-atencion-vacia .tv-atencion-etiqueta { color: #8b949e; }
+.tv-atencion-paciente { font-size: 4rem; font-weight: 800; line-height: 1.1; margin: 0.5rem 0; }
+.tv-atencion-medico { font-size: 1.6rem; color: #58a6ff; }
+.tv-atencion-espera { font-size: 2.5rem; color: #8b949e; margin: 0.5rem 0; }
+
+.tv-lista-zona { flex: 1; padding: 1rem 2rem 2rem; overflow: auto; }
+.tv-lista-titulo {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #8b949e;
+  margin-bottom: 1rem;
+}
+.tv-sin-espera { color: #8b949e; font-size: 1.2rem; text-align: center; padding: 2rem; }
+.tv-lista { display: flex; flex-direction: column; gap: 0.5rem; }
+.tv-lista-item {
+  display: grid;
+  grid-template-columns: 3rem 1fr auto auto;
+  gap: 1.5rem;
+  align-items: center;
+  background: #161b22;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  font-size: 1.4rem;
+}
+.tv-lista-pos {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #8b949e;
+  background: #30363d;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tv-lista-nombre { font-weight: 600; color: #e6edf3; }
+.tv-lista-hora { color: #ffa657; font-weight: 600; font-variant-numeric: tabular-nums; }
+.tv-lista-medico { color: #8b949e; font-size: 1.1rem; }
+
+/* ===== SALA DE ESPERA - PANEL ADMIN ===== */
+.sala-admin { padding: 2rem; }
+.sala-admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+.sala-admin-titulo { font-size: 1.6rem; font-weight: 700; margin: 0; color: #1e293b; }
+.sala-admin-sub { font-size: 0.9rem; color: #64748b; margin-top: 0.25rem; display: block; }
+.sala-admin-acciones { display: flex; align-items: center; gap: 1rem; }
+.sala-actualizando { font-size: 0.85rem; color: #64748b; }
+.btn-tv {
+  background: #1e293b;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.btn-tv:hover { background: #334155; }
+.sala-vacia, .sala-cargando { color: #64748b; text-align: center; padding: 3rem; }
+.sala-error { color: #dc2626; padding: 2rem; text-align: center; }
+.sala-tabla-wrap { overflow-x: auto; }
+.sala-tabla { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.sala-tabla th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.sala-tabla td { padding: 0.75rem 1rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+.sala-fila:hover { background: #f8fafc; }
+.sala-fila-en_atencion { background: #f0fdf4; }
+.sala-fila-atendido, .sala-fila-ausente { opacity: 0.65; }
+.sala-nombre { font-weight: 500; }
+.sala-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.sala-badge-esperando { background: #dbeafe; color: #1d4ed8; }
+.sala-badge-en_atencion { background: #dcfce7; color: #15803d; }
+.sala-badge-atendido { background: #e2e8f0; color: #475569; }
+.sala-badge-ausente { background: #fee2e2; color: #dc2626; }
+.sala-btn {
+  padding: 0.3rem 0.7rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-right: 0.3rem;
+}
+.sala-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.sala-btn-llamar { background: #2563eb; color: #fff; }
+.sala-btn-llamar:hover:not(:disabled) { background: #1d4ed8; }
+.sala-btn-fin { background: #16a34a; color: #fff; }
+.sala-btn-fin:hover:not(:disabled) { background: #15803d; }
+.sala-btn-ausente { background: #dc2626; color: #fff; }
+.sala-btn-ausente:hover:not(:disabled) { background: #b91c1c; }
+.sala-btn-reset { background: #94a3b8; color: #fff; }
+.sala-btn-reset:hover:not(:disabled) { background: #64748b; }

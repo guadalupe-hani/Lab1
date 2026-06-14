@@ -135,4 +135,15 @@ class TurnoController(private val turnoService: TurnoService) {
             ResponseEntity.badRequest().body(mapOf("error" to e.message))
         }
     }
+
+    @GetMapping("/sala-espera")
+    fun salaEspera(session: HttpSession): ResponseEntity<Any> {
+        val s = sesion(session) ?: return ResponseEntity.status(401).body(mapOf("error" to "No hay sesión activa"))
+        if (s.second != "ADMINISTRATIVO") return ResponseEntity.status(403).body(mapOf("error" to "Solo administrativos"))
+        return try {
+            ResponseEntity.ok(turnoService.obtenerSalaEspera(s.first, s.second))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(mapOf("error" to e.message))
+        }
+    }
 }

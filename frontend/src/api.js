@@ -83,6 +83,7 @@ export const api = {
   reportarRetrasoPaciente: (turnoId, minutos) => request(`/turnos/${turnoId}/retraso`, { method: 'PUT', body: JSON.stringify({ minutos }) }),
   reportarRetrasoMedico: (minutos) => request('/turnos/medico/retraso', { method: 'PUT', body: JSON.stringify({ minutos }) }),
   marcarEstadoPaciente: (turnoId, estado) => request(`/turnos/${turnoId}/estado-paciente`, { method: 'PUT', body: JSON.stringify({ estado }) }),
+  salaEspera: () => request('/turnos/sala-espera'),
 
   // Medicamentos
   medicamentos: () => request('/medicamentos'),

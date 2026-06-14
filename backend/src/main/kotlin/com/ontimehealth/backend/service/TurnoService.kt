@@ -335,22 +335,24 @@ class TurnoService(
     }
 
     /** Fila del usuario logueado: la propia agenda de hoy (médico) o la fila del turno de hoy (paciente). */
-    fun obtenerFilaPropia(usuarioId: Long, rol: String): Map<String, Any?> = when (rol) {
-        "MEDICO" -> {
-            val profesional = profesionalRepository.findByUsuarioId(usuarioId)
-                ?: throw IllegalArgumentException("Profesional no encontrado")
-            val fila = obtenerFila(profesional.id!!, rol, usuarioId)
-            fila + mapOf("tieneFilaHoy" to (fila["turnos"] as List<*>).isNotEmpty())
+    fun obtenerFilaPropia(usuarioId: Long, rol: String): Map<String, Any?> {
+        return when (rol) {
+            "MEDICO" -> {
+                val profesional = profesionalRepository.findByUsuarioId(usuarioId)
+                    ?: throw IllegalArgumentException("Profesional no encontrado")
+                val fila = obtenerFila(profesional.id!!, rol, usuarioId)
+                fila + mapOf("tieneFilaHoy" to (fila["turnos"] as List<*>).isNotEmpty())
+            }
+            "PACIENTE" -> {
+                val paciente = pacienteRepository.findByUsuarioId(usuarioId)
+                    ?: throw IllegalArgumentException("Paciente no encontrado")
+                val turnoHoy = turnoRepository.findByPacienteIdAndFechaAndEstado(paciente.id!!, LocalDate.now(), "PROGRAMADO").firstOrNull()
+                    ?: return mapOf("tieneFilaHoy" to false, "turnos" to emptyList<Any>())
+                val fila = obtenerFila(turnoHoy.profesional!!.id!!, rol, usuarioId)
+                fila + mapOf("tieneFilaHoy" to true)
+            }
+            else -> throw IllegalArgumentException("Rol no autorizado")
         }
-        "PACIENTE" -> {
-            val paciente = pacienteRepository.findByUsuarioId(usuarioId)
-                ?: throw IllegalArgumentException("Paciente no encontrado")
-            val turnoHoy = turnoRepository.findByPacienteIdAndFechaAndEstado(paciente.id!!, LocalDate.now(), "PROGRAMADO").firstOrNull()
-                ?: return mapOf("tieneFilaHoy" to false, "turnos" to emptyList<Any>())
-            val fila = obtenerFila(turnoHoy.profesional!!.id!!, rol, usuarioId)
-            fila + mapOf("tieneFilaHoy" to true)
-        }
-        else -> throw IllegalArgumentException("Rol no autorizado")
     }
 
     @Transactional
@@ -438,5 +440,42 @@ class TurnoService(
     private fun broadcastFila(profesionalId: Long) {
         val payload: Any = mapOf("profesionalId" to profesionalId, "ts" to System.currentTimeMillis())
         messagingTemplate.convertAndSend("/topic/fila/$profesionalId", payload)
+    }
+
+    fun obtenerSalaEspera(usuarioId: Long, rol: String): Map<String, Any?> {
+        if (rol != "ADMINISTRATIVO") throw IllegalArgumentException("Solo administrativos")
+        val consultorioId = obtenerConsultorioAdmin(usuarioId)
+        val hoy = LocalDate.now()
+        val turnos = turnoRepository.findByConsultorioIdAndFechaAndEstadoOrderByHoraAsc(consultorioId, hoy, "PROGRAMADO")
+
+        val offsetsPorProfesional = mutableMapOf<Long, Int>()
+        fun offset(profId: Long) = offsetsPorProfesional.getOrPut(profId) {
+            filaRepository.findByProfesionalIdAndFecha(profId, hoy)?.offsetMinutos ?: 0
+        }
+
+        fun turnoMap(t: Turnos): Map<String, Any?> {
+            val profId = t.profesional?.id ?: 0L
+            return mapOf(
+                "turnoId" to t.id,
+                "hora" to t.hora?.toString(),
+                "horaEstimada" to t.hora?.plusMinutes(offset(profId).toLong())?.toString(),
+                "estadoPaciente" to (t.estadoPaciente ?: "ESPERANDO"),
+                "pacienteNombre" to "${t.paciente?.usuario?.nombre ?: ""} ${t.paciente?.usuario?.apellido ?: ""}".trim(),
+                "medicoNombre" to "${t.profesional?.usuario?.nombre ?: ""} ${t.profesional?.usuario?.apellido ?: ""}".trim()
+            )
+        }
+
+        val todos = turnos.map(::turnoMap)
+        val enAtencion = todos.filter { it["estadoPaciente"] == "EN_ATENCION" }
+        val esperando = todos.filter { it["estadoPaciente"] == "ESPERANDO" }
+        val consultorio = consultorioRepository.findById(consultorioId).orElse(null)
+
+        return mapOf(
+            "fecha" to hoy.toString(),
+            "consultorio" to consultorio?.nombre,
+            "enAtencion" to enAtencion,
+            "esperando" to esperando,
+            "todos" to todos
+        )
     }
 }

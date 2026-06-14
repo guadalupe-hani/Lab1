@@ -13,6 +13,7 @@ import './App.css'
 import Chat from './components/Chat'
 import FilaEnVivo from './components/FilaEnVivo'
 import HistorialMedicoPage from './components/HistorialMedico'
+import SalaEsperaPage from './components/SalaEspera'
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -20,7 +21,7 @@ export default function App() {
   const [view, setView] = useState('login')
     const [page, setPage] = useState(() => {
         const path = window.location.pathname.slice(1)
-        const validas = ['inicio', 'recetas', 'agenda', 'turnos', 'medicamentos', 'perfil', 'chat', 'fila', 'historial']
+        const validas = ['inicio', 'recetas', 'agenda', 'turnos', 'medicamentos', 'perfil', 'chat', 'fila', 'historial', 'sala-espera', 'sala-tv']
         return validas.includes(path) ? path : 'inicio'
     })
 
@@ -63,6 +64,10 @@ export default function App() {
       )
   }
 
+    if (user && page === 'sala-tv') {
+        return <SalaEsperaPage modoTv={true} />
+    }
+
   if (user) return (
     <div className="app-logged">
       <Navbar user={user} page={page} onNavigate={setPage} onLogout={() => setUser(null)} />
@@ -85,6 +90,7 @@ export default function App() {
         {page === 'chat' && (<Chat user={user} />)}
         {page === 'fila' && (<FilaEnVivo user={user} />)}
         {page === 'historial' && (<HistorialMedicoPage user={user} />)}
+        {page === 'sala-espera' && <SalaEsperaPage />}
       </div>
     </div>
   )

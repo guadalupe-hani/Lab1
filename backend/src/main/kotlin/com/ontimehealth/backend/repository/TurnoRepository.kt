@@ -13,4 +13,5 @@ interface TurnoRepository : JpaRepository<Turnos, Long> {
     fun findByConsultorioIdOrderByFechaDescHoraDesc(consultorioId: Long): List<Turnos>
     fun findByProfesionalIdAndFechaAndEstadoOrderByHoraAsc(profesionalId: Long, fecha: LocalDate, estado: String): List<Turnos>
     fun findByPacienteIdAndFechaAndEstado(pacienteId: Long, fecha: LocalDate, estado: String): List<Turnos>
+    fun findByConsultorioIdAndFechaAndEstadoOrderByHoraAsc(consultorioId: Long, fecha: LocalDate, estado: String): List<Turnos>
 }
