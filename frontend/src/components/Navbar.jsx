@@ -70,6 +70,11 @@ export default function Navbar({ user, page, onNavigate, onLogout }) {
                 {user.rol === 'ADMINISTRATIVO' && (
                     <button className={linkClass('medicamentos')} onClick={() => onNavigate('medicamentos')}>Medicamentos</button>
                 )}
+                {(user.rol === 'PACIENTE' || user.rol === 'MEDICO') && (
+                    <button className={linkClass('historial')} onClick={() => onNavigate('historial')}>
+                        {user.rol === 'PACIENTE' ? 'Mi historial' : 'Historial'}
+                    </button>
+                )}
             </div>
             <div className="nav-user">
                 {(user.rol === 'PACIENTE' || user.rol === 'MEDICO') && (

@@ -102,4 +102,8 @@ export const api = {
   chatConversacion: (otroUsuarioId) => request(`/chat/conversacion/${otroUsuarioId}`),
   chatNoLeidos: () => request('/chat/no-leidos'),
   chatNoLeidosPorEmisor: () => request('/chat/no-leidos-por-emisor'),
+
+  // Historial médico
+  miHistorial: () => request('/historial/mio'),
+  historialPaciente: (usuarioId) => request(`/historial/paciente/${usuarioId}`),
 }

@@ -1137,3 +1137,195 @@ button.link:hover { background: none; color: var(--primary-hover); }
   flex-shrink: 0;
   align-self: flex-end;
 }
+
+/* === Historial médico === */
+.historial-info-card {
+  background: var(--primary-soft);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.historial-info-card h3 {
+  margin: 0 0 10px;
+  color: var(--primary);
+  font-size: 17px;
+}
+
+.historial-info-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.historial-seccion {
+  margin-bottom: 24px;
+}
+
+.historial-seccion-titulo {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--primary-soft);
+}
+
+.historial-item {
+  background: var(--info);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--primary);
+}
+
+.historial-item.cancelado {
+  border-left-color: var(--danger);
+  opacity: 0.75;
+}
+
+.historial-item-fecha {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.historial-item-detalle {
+  font-size: 13px;
+  color: var(--text);
+  margin-top: 3px;
+}
+
+.historial-item-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.historial-estado {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--primary-soft);
+  color: var(--primary);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.historial-estado.cancelado {
+  background: #fef2f2;
+  color: var(--danger);
+}
+
+.historial-receta-detalle {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.historial-receta-items {
+  margin: 0 0 8px;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.historial-receta-contenido {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: pre-wrap;
+  background: var(--bg-soft);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.historial-empty {
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.historial-body {
+  margin-top: 8px;
+}
+
+.historial-buscador-wrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.historial-buscador {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #f8fafc;
+}
+
+.historial-buscador:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #fff;
+}
+
+.historial-sugerencias {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 100;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.historial-sugerencias li {
+  padding: 11px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border-soft);
+  transition: background 0.12s;
+}
+
+.historial-sugerencias li:last-child {
+  border-bottom: none;
+}
+
+.historial-sugerencias li:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.historial-sugerencia-dni {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.historial-ver-todos {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.historial-ver-todos:hover {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+}
