@@ -14,6 +14,7 @@ import Chat from './components/Chat'
 import FilaEnVivo from './components/FilaEnVivo'
 import HistorialMedicoPage from './components/HistorialMedico'
 import SalaEsperaPage from './components/SalaEspera'
+import EstadisticasAdmin from './components/EstadisticasAdmin'
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -21,7 +22,7 @@ export default function App() {
   const [view, setView] = useState('login')
     const [page, setPage] = useState(() => {
         const path = window.location.pathname.slice(1)
-        const validas = ['inicio', 'recetas', 'agenda', 'turnos', 'medicamentos', 'perfil', 'chat', 'fila', 'historial', 'sala-espera', 'sala-tv']
+        const validas = ['inicio', 'recetas', 'agenda', 'turnos', 'medicamentos', 'perfil', 'chat', 'fila', 'historial', 'sala-espera', 'sala-tv', 'estadisticas']
         return validas.includes(path) ? path : 'inicio'
     })
 
@@ -91,6 +92,7 @@ export default function App() {
         {page === 'fila' && (<FilaEnVivo user={user} />)}
         {page === 'historial' && (<HistorialMedicoPage user={user} />)}
         {page === 'sala-espera' && <SalaEsperaPage />}
+        {page === 'estadisticas' && <EstadisticasAdmin />}
       </div>
     </div>
   )

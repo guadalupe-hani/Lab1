@@ -1500,3 +1500,137 @@ button.link:hover { background: none; color: var(--primary-hover); }
   background: #4285f4;
   color: #fff;
 }
+
+/* ===== ESTADÍSTICAS ADMIN ===== */
+.est-container { padding: 2rem; max-width: 1100px; }
+.est-titulo { font-size: 1.6rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b; }
+
+.est-buscar-wrap { position: relative; max-width: 420px; margin-bottom: 2rem; }
+.est-buscar-input {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+.est-buscar-input:focus { outline: none; border-color: #2563eb; }
+.est-sugerencias {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0.4rem 0;
+  z-index: 50;
+}
+.est-sugerencias li {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.est-sugerencias li:hover { background: #f1f5f9; }
+
+.est-cargando, .est-vacio { color: #64748b; padding: 2rem 0; }
+.est-error { color: #dc2626; padding: 1rem 0; }
+
+.est-medico-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+.est-medico-nombre { font-size: 1.4rem; font-weight: 700; margin: 0; color: #1e293b; }
+.est-medico-info { font-size: 0.9rem; color: #64748b; }
+
+.btn-exportar-pdf {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-exportar-pdf:hover:not(:disabled) { background: #1d4ed8; }
+.btn-exportar-pdf:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.est-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.est-card {
+  border-radius: 10px;
+  padding: 1.2rem 1rem;
+  text-align: center;
+  border: 1px solid transparent;
+}
+.est-card-valor { font-size: 2rem; font-weight: 800; line-height: 1; }
+.est-card-label { font-size: 0.75rem; font-weight: 600; margin-top: 0.4rem; text-transform: uppercase; letter-spacing: 0.04em; }
+
+.est-card-total    { background: #f1f5f9; color: #334155; border-color: #e2e8f0; }
+.est-card-verde    { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+.est-card-amarillo { background: #fefce8; color: #a16207; border-color: #fde68a; }
+.est-card-azul     { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+.est-card-rojo     { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+.est-card-naranja  { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+.est-card-gris     { background: #f8fafc; color: #475569; border-color: #e2e8f0; }
+
+.est-detalle-titulo { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: #1e293b; }
+.est-tabla-wrap { overflow-x: auto; }
+.est-tabla { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.est-tabla th {
+  text-align: left;
+  padding: 0.7rem 1rem;
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.est-tabla td { padding: 0.7rem 1rem; border-bottom: 1px solid #f1f5f9; }
+.est-tabla tr:hover td { background: #f8fafc; }
+
+.est-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.badge-atendido   { background: #dcfce7; color: #15803d; }
+.badge-ausente    { background: #fef9c3; color: #a16207; }
+.badge-cancelado  { background: #fee2e2; color: #dc2626; }
+.badge-programado { background: #dbeafe; color: #1d4ed8; }
+
+.est-paginado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+.est-pag-btn {
+  padding: 0.4rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.est-pag-btn:hover:not(:disabled) { background: #f1f5f9; }
+.est-pag-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.est-pag-info { font-size: 0.85rem; color: #64748b; }

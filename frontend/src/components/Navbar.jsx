@@ -73,6 +73,9 @@ export default function Navbar({ user, page, onNavigate, onLogout }) {
                 {user.rol === 'ADMINISTRATIVO' && (
                     <button className={linkClass('sala-espera')} onClick={() => onNavigate('sala-espera')}>Sala de espera</button>
                 )}
+                {user.rol === 'ADMINISTRATIVO' && (
+                    <button className={linkClass('estadisticas')} onClick={() => onNavigate('estadisticas')}>Estadísticas</button>
+                )}
                 {(user.rol === 'PACIENTE' || user.rol === 'MEDICO') && (
                     <button className={linkClass('historial')} onClick={() => onNavigate('historial')}>
                         {user.rol === 'PACIENTE' ? 'Mi historial' : 'Historial'}

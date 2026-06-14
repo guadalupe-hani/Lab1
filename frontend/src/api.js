@@ -83,6 +83,12 @@ export const api = {
   reportarRetrasoPaciente: (turnoId, minutos) => request(`/turnos/${turnoId}/retraso`, { method: 'PUT', body: JSON.stringify({ minutos }) }),
   reportarRetrasoMedico: (minutos) => request('/turnos/medico/retraso', { method: 'PUT', body: JSON.stringify({ minutos }) }),
   marcarEstadoPaciente: (turnoId, estado) => request(`/turnos/${turnoId}/estado-paciente`, { method: 'PUT', body: JSON.stringify({ estado }) }),
+  estadisticasMedico: (profesionalId) => request(`/estadisticas/medico/${profesionalId}`),
+  estadisticasMedicoPdf: async (profesionalId) => {
+    const res = await fetch(`${BASE_URL}/estadisticas/medico/${profesionalId}/pdf`, { credentials: 'include' })
+    if (!res.ok) throw new Error('No se pudo generar el PDF')
+    return res.blob()
+  },
   salaEspera: () => request('/turnos/sala-espera'),
 
   // Medicamentos
