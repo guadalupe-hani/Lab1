@@ -7,6 +7,7 @@ import com.ontimehealth.backend.model.Profesionales
 import com.ontimehealth.backend.model.Usuarios
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 
 @Service
 class UsuarioService(
@@ -115,6 +116,7 @@ class UsuarioService(
             "MEDICO" -> profesionalRepository.findByUsuarioId(id)?.let {
                 base["matricula"] = it.matricula
                 base["especialidadId"] = it.especialidad?.id
+                base["precioConsulta"] = it.precioConsulta
             }
             "ADMINISTRATIVO" -> administrativoRepository.findByUsuarioId(id)?.let {
                 base["consultorioId"] = it.consultorio?.id
@@ -128,7 +130,8 @@ class UsuarioService(
         id: Long,
         nombre: String?, apellido: String?, email: String?, password: String?,
         telefono: String?, obraSocial: String?, plan: String?,
-        especialidadId: Long?, consultorioId: Long?
+        especialidadId: Long?, consultorioId: Long?,
+        precioConsulta: BigDecimal?,
     ): Usuarios {
         val u = usuarioRepository.findById(id).orElseThrow {
             IllegalArgumentException("Usuario no encontrado")
@@ -156,6 +159,7 @@ class UsuarioService(
                         IllegalArgumentException("Especialidad no encontrada")
                     }
                 }
+                if (precioConsulta != null) pro.precioConsulta = precioConsulta
                 profesionalRepository.save(pro)
             }
             "ADMINISTRATIVO" -> administrativoRepository.findByUsuarioId(id)?.let { a ->

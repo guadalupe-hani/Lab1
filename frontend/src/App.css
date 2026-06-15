@@ -479,6 +479,28 @@ button.link:hover { background: none; color: var(--primary-hover); }
 }
 .turno-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
 
+.pago-banner {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.pago-banner-success { background: #dcfce7; color: #16a34a; }
+.pago-banner-pending { background: #fef9c3; color: #ca8a04; }
+.pago-banner-failure { background: #fee2e2; color: var(--danger); }
+.pago-banner button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+}
+
 /* === Fila en vivo === */
 .fila-bar-wrap {
   margin-bottom: 12px;

@@ -77,6 +77,8 @@ export const api = {
   agendarTurnoPaciente: (body) => request('/turnos/paciente', { method: 'POST', body: JSON.stringify(body) }),
   agendarTurnoAdmin: (body) => request('/turnos/admin', { method: 'POST', body: JSON.stringify(body) }),
   cancelarTurno: (id, motivo) => request(`/turnos/${id}/cancelar`, { method: 'PUT', body: JSON.stringify({ motivo: motivo || null }) }),
+  crearPreferenciaPago: (turnoId) => request(`/pagos/turno/${turnoId}/preferencia`, { method: 'POST' }),
+  confirmarPago: (turnoId, status) => request(`/pagos/turno/${turnoId}/confirmar?status=${status}`, { method: 'PUT' }),
 
   // Fila en vivo
   filaEnVivo: () => request('/turnos/fila'),

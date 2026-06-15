@@ -287,7 +287,9 @@ class TurnoService(
         "profesionalEspecialidad" to t.profesional?.especialidad?.nombre,
         "consultorioId" to t.consultorio?.id,
         "consultorioNombre" to t.consultorio?.nombre,
-        "consultorioDireccion" to t.consultorio?.direccion
+        "consultorioDireccion" to t.consultorio?.direccion,
+        "estadoPaciente" to t.estadoPaciente,
+        "estadoPago" to t.estadoPago
     )
 
     // ==================== FILA EN VIVO ====================

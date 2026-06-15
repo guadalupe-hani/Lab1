@@ -43,4 +43,13 @@ class Turnos {
 
     @Column(name = "motivo_cancelacion", length = 500)
     var motivoCancelacion: String? = null
+
+    @Column(name="estado_pago")
+    var estadoPago: String? = null
+
+    @Column(name="mercadopago_preference_id")
+    var mercadopagoPreferenceId: String? = null
+
+    @Column(name = "mercadopago_payment_id")
+    var mercadopagoPaymentId: String? = null
 }

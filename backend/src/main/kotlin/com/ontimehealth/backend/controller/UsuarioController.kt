@@ -4,6 +4,7 @@ import com.ontimehealth.backend.service.UsuarioService
 import jakarta.servlet.http.HttpSession
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.math.BigDecimal
 
 data class RegistroPacienteRequest(
     val nombre: String, val apellido: String, val email: String, val password: String,
@@ -25,7 +26,8 @@ data class LoginRequest(val email: String, val password: String)
 data class EditarRequest(
     val nombre: String?, val apellido: String?, val email: String?, val password: String?,
     val telefono: String?, val obraSocial: String?, val plan: String?,
-    val especialidadId: Long?, val consultorioId: Long?
+    val especialidadId: Long?, val consultorioId: Long?,
+    val precioConsulta: BigDecimal?
 )
 
 @RestController
@@ -127,7 +129,8 @@ class UsuarioController(private val usuarioService: UsuarioService) {
             val u = usuarioService.editar(
                 id, req.nombre, req.apellido, req.email, req.password,
                 req.telefono, req.obraSocial, req.plan,
-                req.especialidadId, req.consultorioId
+                req.especialidadId, req.consultorioId,
+                req.precioConsulta
             )
             session.setAttribute("usuarioEmail", u.email)
             ResponseEntity.ok(mapOf(

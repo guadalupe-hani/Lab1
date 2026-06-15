@@ -24,6 +24,10 @@ function validate(form, rol) {
         errors.telefono = 'Teléfono inválido'
     }
 
+    if (rol === 'MEDICO' && form.precioConsulta !== '' && (isNaN(Number(form.precioConsulta)) || Number(form.precioConsulta) < 0)) {
+        errors.precioConsulta = 'Ingresá un monto válido'
+    }
+
     return errors
 }
 
@@ -68,6 +72,7 @@ export default function EditarPerfil({ user, onDone, onCancel, onLogout }) {
                 plan: data.plan || '',
                 especialidadId: data.especialidadId ?? '',
                 consultorioId: data.consultorioId ?? '',
+                precioConsulta: data.precioConsulta ?? '',
             }))
             .catch((err) => setError(err.message))
     }, [])
@@ -115,6 +120,7 @@ export default function EditarPerfil({ user, onDone, onCancel, onLogout }) {
                 body.plan = form.plan
             } else if (user.rol === 'MEDICO') {
                 body.especialidadId = form.especialidadId ? Number(form.especialidadId) : null
+                body.precioConsulta = form.precioConsulta !== '' ? Number(form.precioConsulta) : null
             } else if (user.rol === 'ADMINISTRATIVO') {
                 body.consultorioId = form.consultorioId ? Number(form.consultorioId) : null
             }
@@ -168,9 +174,14 @@ export default function EditarPerfil({ user, onDone, onCancel, onLogout }) {
                         </>
                     )}
                     {user.rol === 'MEDICO' && (
+                        <>
                         <Field id="ep-especialidad" label="ID de especialidad" error={fieldErrors.especialidadId}>
                             <input id="ep-especialidad" placeholder="Ej: 1" value={form.especialidadId} onChange={update('especialidadId')} />
                         </Field>
+                        <Field id="ep-precio" label="Precio de consulta (ARS)" error={fieldErrors.precioConsulta}>
+                            <input id="ep-precio" type="number" min="0" step="0.01" placeholder="Ej: 5000" value={form.precioConsulta} onChange={update('precioConsulta')} />
+                        </Field>
+                        </>
                     )}
                     {user.rol === 'ADMINISTRATIVO' && (
                         <Field id="ep-consultorio" label="ID de consultorio" error={fieldErrors.consultorioId}>

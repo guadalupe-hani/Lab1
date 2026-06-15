@@ -31,6 +31,8 @@ export default function Turnos({ user }) {
   const [profesionalSel, setProfesionalSel] = useState(null) // { id, nombre }
   const [turnoACancelar, setTurnoACancelar] = useState(null)
   const [idTurnoParaMotivo, setIdTurnoParaMotivo] = useState(null)
+  const [pagando, setPagando] = useState(null)
+  const [mensajePago, setMensajePago] = useState(null) // 'success' | 'pending' | 'failure' | null
 
   const cargar = () => {
     api.turnosMios()
@@ -41,6 +43,20 @@ export default function Turnos({ user }) {
 
   useEffect(() => {
     cargar()
+
+    const params = new URLSearchParams(window.location.search)
+    const pago = params.get('pago')
+    if (pago) {
+      setMensajePago(pago)
+      const turnoId = params.get('external_reference')
+      const status = params.get('status') || params.get('collection_status')
+      if (turnoId && status) {
+        api.confirmarPago(turnoId, status)
+          .then(() => cargar())
+          .catch(() => {})
+      }
+      window.history.replaceState({}, '', window.location.pathname)
+    }
   }, [])
 
   const handleClickCancelar = (id) => {
@@ -78,6 +94,17 @@ export default function Turnos({ user }) {
   const handleReagendar = (turno) => {
     setProfesionalSel({ id: turno.profesionalId, nombre: turno.profesionalNombre })
     setVista('slots')
+  }
+
+  const handlePagar = async (turnoId) => {
+    setPagando(turnoId)
+    try {
+      const { initPoint } = await api.crearPreferenciaPago(turnoId)
+      window.location.href = initPoint
+    } catch (e) {
+      alert(e.message)
+      setPagando(null)
+    }
   }
 
   if (vista === 'buscar') {
@@ -122,6 +149,16 @@ export default function Turnos({ user }) {
           <button onClick={() => setVista('buscar')}>+ Agendar turno</button>
         )}
       </div>
+      {mensajePago && (
+        <div className={`pago-banner pago-banner-${mensajePago}`}>
+          <span>
+            {mensajePago === 'success' && '✅ ¡Pago realizado con éxito!'}
+            {mensajePago === 'pending' && '⏳ Tu pago está pendiente de confirmación.'}
+            {mensajePago === 'failure' && '❌ El pago no se pudo completar. Podés intentarlo nuevamente.'}
+          </span>
+          <button onClick={() => setMensajePago(null)}>✕</button>
+        </div>
+      )}
       {loading && <p>Cargando...</p>}
       {error && <p className="error">{error}</p>}
       {!loading && lista.length === 0 && <p>No tenés turnos.</p>}
@@ -160,6 +197,14 @@ export default function Turnos({ user }) {
                       )}
                       <button className="link danger" onClick={() => handleClickCancelar(t.id)}>Cancelar</button>
                     </>
+                )}
+                {user.rol === 'PACIENTE' && t.estadoPaciente === 'ATENDIDO' && t.estadoPago !== 'APROBADO' && (
+                    <button onClick={() => handlePagar(t.id)} disabled={pagando === t.id}>
+                      {pagando === t.id ? 'Redirigiendo...' : 'Pagar consulta'}
+                    </button>
+                )}
+                {t.estadoPago === 'APROBADO' && (
+                    <span className="turno-estado-msg">✅  Pago aprobado</span>
                 )}
                 {t.estado === 'CANCELADO' && user.rol === 'PACIENTE' && canceladoPorOtro && (
                   <button onClick={() => handleReagendar(t)}>Reagendar</button>

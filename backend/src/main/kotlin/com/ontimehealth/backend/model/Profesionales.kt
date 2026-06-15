@@ -1,6 +1,7 @@
 package com.ontimehealth.backend.model
 
 import jakarta.persistence.*
+import java.math.BigDecimal
 
 @Entity
 @Table(name = "Profesionales")
@@ -19,4 +20,7 @@ class Profesionales {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "especialidad_id")
     var especialidad: Especialidades? = null
+
+    @Column(name = "precio_consulta")
+    var precioConsulta: BigDecimal? = null
 }

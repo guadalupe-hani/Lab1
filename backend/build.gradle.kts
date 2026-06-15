@@ -33,6 +33,19 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("com.github.librepdf:openpdf:1.3.30")
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
+	implementation("com.mercadopago:sdk-java:2.1.27")
+
+	constraints {
+		implementation("commons-beanutils:commons-beanutils:1.11.0") {
+			because("Corrige CVE-2025-48734 (transitiva de mercadopago:sdk-java)")
+		}
+		implementation("org.codehaus.plexus:plexus-utils:4.0.2") {
+			because("Corrige CVE-2025-67030 (transitiva de mercadopago:sdk-java)")
+		}
+		implementation("org.iq80.snappy:snappy:0.5") {
+			because("Corrige CVE-2024-36124 (transitiva de mercadopago:sdk-java)")
+		}
+	}
 }
 
 kotlin {
